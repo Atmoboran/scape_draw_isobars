@@ -414,12 +414,12 @@
         <div class="crit">
           <div class="crit-top"><span>N&auml;he zur Referenz</span><span id="res-ref">0 %</span></div>
           <div class="crit-bar"><i id="bar-ref"></i></div>
-          <div class="crit-note">Wie nah deine Linien an der interpolierten Referenz liegen &mdash; mit einem K&auml;stchen Toleranz. 25 Punkte.</div>
+          <div class="crit-note">Wie nah deine Linien an der interpolierten Referenz liegen, in beide Richtungen gemessen &mdash; ab 0,8 K&auml;stchen Abstand z&auml;hlt es nicht mehr. 25 Punkte.</div>
         </div>
         <div class="crit">
           <div class="crit-top"><span>Glattheit</span><span id="res-smooth">0 %</span></div>
           <div class="crit-bar"><i id="bar-smooth"></i></div>
-          <div class="crit-note">Echte Isobaren schwingen weich &mdash; harte Zickzack-Ecken kosten. 15 Punkte.</div>
+          <div class="crit-note">Echte Isobaren schwingen weich &mdash; sanfte B&ouml;gen sind frei, scharfe Knicke kosten. 15 Punkte.</div>
         </div>
         <div class="penalties" id="res-pen"></div>
         <ul class="level-report" id="res-levels"></ul>
@@ -430,7 +430,7 @@
       </div>
     </section>
 
-    <p class="hint" id="hint">Ziehe von Kante zu Kante &uuml;ber das Feld. Die Linie rastet auf den Punkten zwischen den Stationen ein. Tippe auf ein St&uuml;ck Linie, um es zu l&ouml;schen.</p>
+    <p class="hint" id="hint">Zeichne frei mit Finger oder Maus. Enden nahe am Rand rasten am Rand ein, ein Ende nahe am Anfang schlie&szlig;t den Ring. Setz an einem offenen Ende an, um weiterzuzeichnen &mdash; tippe eine Linie an, um sie zu l&ouml;schen.</p>
 
     <div class="explainer">
       <details class="topic">
@@ -445,7 +445,7 @@
         <summary>Wie wird bewertet?</summary>
         <div class="topic-body">
           <p class="blurb">Es gibt keine einzig richtige L&ouml;sung. Das Spiel pr&uuml;ft deine Linien <b>strukturell</b>: Liegt f&uuml;r jede Isobare jede Station auf der richtigen Seite? F&uuml;r jede Druckstufe werden alle Paare aus einer Station darunter und einer dar&uuml;ber gebildet &mdash; jedes Paar, das deine Linien nicht trennen, kostet.</p>
-          <p class="blurb">Harte Regeln: Isobaren kreuzen und ber&uuml;hren sich nie (das l&auml;sst der Stift gar nicht erst zu), und sie enden nie mitten im Feld. Jedes offene Ende kostet 10 Punkte, der Tipp ebenfalls 10.</p>
+          <p class="blurb">Harte Regeln: Isobaren kreuzen sich nie &mdash; jede Kreuzung wird rot markiert und kostet 15 Punkte. Und sie enden nie mitten im Feld: Ein offenes Ende trennt nichts, weil der Druck um das Ende herum &bdquo;flie&szlig;en&ldquo; kann, und kostet zus&auml;tzlich 10 Punkte. Der Tipp kostet ebenfalls 10.</p>
           <p class="blurb">Dazu kommen zwei Bonus-Kriterien: <b>Glattheit</b> (wenige harte Ecken) und <b>N&auml;he zur Referenz</b>. Die Referenz kennt auch die Werte an den Gitterpunkten ohne Station &mdash; die siehst du erst nach dem Pr&uuml;fen.</p>
         </div>
       </details>
@@ -453,7 +453,7 @@
         <summary>Woher kommt die Referenz?</summary>
         <div class="topic-body">
           <p class="blurb">Hinter jeder Karte steckt ein vollst&auml;ndiges Druckfeld auf allen Gitterpunkten. Die Referenz-Isobaren werden daraus mit <b>Marching Squares</b> berechnet: F&uuml;r jedes K&auml;stchen wird gepr&uuml;ft, an welchen Kanten der Druck die Stufe &uuml;ber- oder unterschreitet, und dort wird linear interpoliert.</p>
-          <p class="blurb">Deine Linien rasten dagegen auf den Kantenmitten ein. Das ist Absicht: So bleibt das Zeichnen mit dem Finger pr&auml;zise genug, und die Bewertung h&auml;ngt nicht an Pixeln, sondern an der Frage, auf welcher Seite jede Station liegt.</p>
+          <p class="blurb">Deine Linien zeichnest du frei. Bewertet wird trotzdem nicht Pixel f&uuml;r Pixel: F&uuml;r jede Druckstufe werden deine Linien in ein feines Raster &uuml;bertragen, und eine F&uuml;llung pr&uuml;ft, welche Stationen im selben Gebiet landen. Die Referenz z&auml;hlt nur als Bonus &mdash; wer anders, aber korrekt trennt, verliert kaum etwas.</p>
         </div>
       </details>
       <details class="topic">
@@ -461,7 +461,7 @@
         <div class="topic-body">
           <p class="blurb"><b>Tutorial:</b> wenige Stationen, eine einzige Isobare, und die Stationen sind nach &bdquo;darunter&ldquo; (blau) und &bdquo;dar&uuml;ber&ldquo; (rot) eingef&auml;rbt.</p>
           <p class="blurb"><b>Klassisch:</b> 16&ndash;20 Stationen, mehrere Isobaren, keine Hilfen.</p>
-          <p class="blurb"><b>Sturm:</b> ein kr&auml;ftiges Tief mit eng liegenden Isobaren &mdash; und nur zwei Minuten Zeit.</p>
+          <p class="blurb"><b>Sturm:</b> ein kr&auml;ftiges Tief mit eng liegenden Isobaren &mdash; oft zwei zwischen benachbarten Stationen &mdash; und nur zwei Minuten Zeit.</p>
           <p class="blurb"><b>Wetterlagen:</b> typische Gro&szlig;wetterlagen Mitteleuropas als idealisierte Druckfelder, von der Westwetterlage bis zum Omega-Hoch.</p>
         </div>
       </details>
@@ -480,25 +480,26 @@
   // ================================================================
   //  Model
   //
-  //  The pressure field lives on a W x H lattice of nodes. Some nodes
+  //  The pressure field lives on a W x H lattice of grid points. Some
   //  are stations (their value is shown), the rest are hidden and only
-  //  used by the reference. Isobars are drawn through the midpoints of
-  //  the edges between neighbouring nodes: a segment joins two edge
-  //  midpoints of the same cell, exactly like one piece of a
-  //  marching-squares contour. A line that passes through an edge
-  //  midpoint "cuts" that edge, i.e. puts its two nodes on opposite
-  //  sides -- which is all the validation needs.
+  //  used by the reference. The player draws freehand; each finished
+  //  stroke is simplified, smoothed and snapped to the rim or closed
+  //  into a ring. Scoring is topological: for every level its lines are
+  //  burnt into a fine raster and a flood fill tells which stations
+  //  share a region -- a line that stops short leaves a gap and
+  //  separates nothing.
   // ================================================================
 
   var INTERVAL = 4;
   var PAD = 0.62;          // board margin, in cells
-  var CAPTURE = 0.32;      // snap radius, in cells (below half the midpoint spacing)
+  var RASTER = 16;         // raster pixels per cell for the region test
+  var SNAP = 0.4;          // how close an end must be to the rim / a loose end to snap, in cells
 
   var MODES = [
-    { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], hint: true, time: 0 },
-    { id: 'classic',  name: 'Klassisch', W: 7, H: 7, stations: [16, 20], levels: [2, 4], grad: [0.5, 0.8], hint: false, time: 0 },
-    { id: 'storm',    name: 'Sturm', W: 9, H: 9, stations: [26, 30], levels: [3, 5], grad: [0.85, 0.9], hint: false, time: 120 },
-    { id: 'synoptic', name: 'Wetter\u00adlagen', W: 9, H: 7, stations: [22, 26], levels: [3, 6], grad: [0.6, 0.8], hint: false, time: 0 }
+    { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], maxCross: 1, hint: true, time: 0 },
+    { id: 'classic',  name: 'Klassisch', W: 7, H: 7, stations: [16, 20], levels: [2, 4], grad: [0.5, 0.85], maxCross: 1, hint: false, time: 0 },
+    { id: 'storm',    name: 'Sturm', W: 9, H: 9, stations: [26, 30], levels: [4, 6], grad: [1.2, 1.6], maxCross: 2, hint: false, time: 120 },
+    { id: 'synoptic', name: 'Wetter­lagen', W: 9, H: 7, stations: [22, 26], levels: [3, 6], grad: [0.6, 0.9], maxCross: 1, hint: false, time: 0 }
   ];
 
   // Idealised large-scale weather patterns over Central Europe. Positions
@@ -523,9 +524,9 @@
   ];
 
   // One fixed colour per pressure level, so 1008 looks the same on every map.
-  var LEVEL_COLORS = ['#4a2e83', '#28348f', '#1093c4', '#00954f', '#6b6b23', '#d2a716', '#ef8f2c', '#c65a2a', '#df2a1e'];
+  var LEVEL_COLORS = ['#3a3a3a', '#8a6fd1', '#4a2e83', '#28348f', '#1093c4', '#00954f', '#6b6b23', '#d2a716', '#ef8f2c', '#c65a2a', '#df2a1e'];
   function levelColor(X) {
-    var k = Math.round((X - 992) / INTERVAL);
+    var k = Math.round((X - 984) / INTERVAL);
     return LEVEL_COLORS[Math.max(0, Math.min(LEVEL_COLORS.length - 1, k))];
   }
 
@@ -538,6 +539,11 @@
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   }
+  function hash32(a, b) {
+    var h = Math.imul((a >>> 0) ^ Math.imul(b >>> 0, 0x85ebca6b), 0xc2b2ae35) >>> 0;
+    h ^= h >>> 16; h = Math.imul(h, 0x7feb352d); h ^= h >>> 15; h = Math.imul(h, 0x846ca68b); h ^= h >>> 16;
+    return h >>> 0;
+  }
   function rr(rng, a, b) { return a + (b - a) * rng(); }
   function ri(rng, a, b) { return Math.floor(rr(rng, a, b + 1)); }
 
@@ -546,7 +552,8 @@
     modeIdx: 0, preset: 0, seed: 1,
     W: 0, H: 0, vals: [], station: [], levels: [],
     E: [], C: [],
-    segs: new Map(),     // key -> {a, b, lvl, cell}
+    lines: [],           // {lvl, pts:[{x,y}], closed}
+    crossings: [], open: [],
     active: 0, tool: 'pen',
     undo: [], result: null, showRef: false, hintOn: false, hintUsed: false,
     timeLeft: 0, locked: false, timerId: null
@@ -554,29 +561,16 @@
 
   function mode() { return MODES[S.modeIdx]; }
 
-  // ---------- lattice ----------
+  // ---------- lattice (used by the reference) ----------
   function nodeIdx(i, j) { return j * S.W + i; }
 
   function buildLattice() {
     var W = S.W, H = S.H, E = [], C = [], i, j;
     var nH = (W - 1) * H;
-    // horizontal edges: node (i,j) -- (i+1,j)
-    for (j = 0; j < H; j++) for (i = 0; i < W - 1; i++) {
-      var cellsH = [];
-      if (j > 0) cellsH.push((j - 1) * (W - 1) + i);
-      if (j < H - 1) cellsH.push(j * (W - 1) + i);
-      E.push({ id: E.length, x: i + 0.5, y: j, a: nodeIdx(i, j), b: nodeIdx(i + 1, j), cells: cellsH, boundary: cellsH.length === 1 });
-    }
-    // vertical edges: node (i,j) -- (i,j+1)
-    for (j = 0; j < H - 1; j++) for (i = 0; i < W; i++) {
-      var cellsV = [];
-      if (i > 0) cellsV.push(j * (W - 1) + i - 1);
-      if (i < W - 1) cellsV.push(j * (W - 1) + i);
-      E.push({ id: E.length, x: i, y: j + 0.5, a: nodeIdx(i, j), b: nodeIdx(i, j + 1), cells: cellsV, boundary: cellsV.length === 1 });
-    }
+    for (j = 0; j < H; j++) for (i = 0; i < W - 1; i++) E.push({ a: nodeIdx(i, j), b: nodeIdx(i + 1, j) });
+    for (j = 0; j < H - 1; j++) for (i = 0; i < W; i++) E.push({ a: nodeIdx(i, j), b: nodeIdx(i, j + 1) });
     for (j = 0; j < H - 1; j++) for (i = 0; i < W - 1; i++) {
       C.push({
-        id: C.length, i: i, j: j,
         T: j * (W - 1) + i, B: (j + 1) * (W - 1) + i,
         L: nH + j * W + i, R: nH + j * W + i + 1,
         TL: nodeIdx(i, j), TR: nodeIdx(i + 1, j), BR: nodeIdx(i + 1, j + 1), BL: nodeIdx(i, j + 1)
@@ -584,21 +578,6 @@
     }
     S.E = E; S.C = C;
   }
-
-  function sideOf(cell, e) {
-    return e === cell.T ? 'T' : e === cell.B ? 'B' : e === cell.L ? 'L' : e === cell.R ? 'R' : null;
-  }
-  function segType(seg) {
-    var c = S.C[seg.cell];
-    var s = [sideOf(c, seg.a), sideOf(c, seg.b)].sort().join('');
-    return s; // one of BL, BR, BT, LR, LT, RT
-  }
-  function sharedCell(a, b) {
-    var ca = S.E[a].cells, cb = S.E[b].cells;
-    for (var i = 0; i < ca.length; i++) if (cb.indexOf(ca[i]) >= 0) return ca[i];
-    return -1;
-  }
-  function segKey(a, b) { return a < b ? a + '_' + b : b + '_' + a; }
 
   // ---------- field generation ----------
   function generate() {
@@ -618,12 +597,6 @@
     S.genAttempts = -1;
   }
 
-  function hash32(a, b) {
-    var h = Math.imul((a >>> 0) ^ Math.imul(b >>> 0, 0x85ebca6b), 0xc2b2ae35) >>> 0;
-    h ^= h >>> 16; h = Math.imul(h, 0x7feb352d); h ^= h >>> 15; h = Math.imul(h, 0x846ca68b); h ^= h >>> 16;
-    return h >>> 0;
-  }
-
   function rawField(rng, m) {
     var W = S.W, H = S.H, comps = [], gx, gy, i, j, k;
     if (m.id === 'synoptic') {
@@ -634,8 +607,8 @@
         comps.push({ x: q.x + rr(rng, -jit, jit), y: q.y + rr(rng, -jit, jit), amp: q.amp, sx: q.sx, sy: q.sy });
       }
     } else if (m.id === 'storm') {
-      gx = rr(rng, -0.4, 0.4); gy = rr(rng, -0.4, 0.4);
-      comps.push({ x: rr(rng, 0.35, 0.65), y: rr(rng, 0.35, 0.65), amp: -3, sx: rr(rng, 0.28, 0.38), sy: rr(rng, 0.26, 0.36) });
+      gx = rr(rng, -0.3, 0.3); gy = rr(rng, -0.3, 0.3);
+      comps.push({ x: rr(rng, 0.35, 0.65), y: rr(rng, 0.35, 0.65), amp: -3, sx: rr(rng, 0.24, 0.34), sy: rr(rng, 0.22, 0.32) });
       if (rng() < 0.6) comps.push({ x: rr(rng, 0, 1), y: rng() < 0.5 ? -0.1 : 1.1, amp: 0.8, sx: 0.3, sy: 0.3 });
     } else if (m.id === 'tutorial') {
       var ang = rr(rng, 0, Math.PI * 2);
@@ -668,9 +641,8 @@
 
   function tryGenerate(rng, m, want, range) {
     var f = rawField(rng, m), i, k, N = f.length;
-    // Scale so the steepest step between neighbours is a fixed fraction of
-    // the isobar interval: then no edge is ever crossed by two isobars, and
-    // one snap point per edge is always enough for a valid drawing.
+    // Scale the steepest step between neighbours to a fraction of the
+    // isobar interval: this sets how tightly the isobars may pack.
     var maxAdj = 0;
     for (k = 0; k < S.E.length; k++) maxAdj = Math.max(maxAdj, Math.abs(f[S.E[k].a] - f[S.E[k].b]));
     if (maxAdj < 1e-9) return false;
@@ -678,7 +650,7 @@
     var mean = 0;
     for (i = 0; i < N; i++) mean += f[i];
     mean /= N;
-    var centre = m.id === 'storm' ? rr(rng, 1000, 1008) : rr(rng, 1006, 1020);
+    var centre = m.id === 'storm' ? rr(rng, 998, 1008) : rr(rng, 1006, 1020);
     var v = [];
     for (i = 0; i < N; i++) v.push(centre + (f[i] - mean) * scale);
     // Keep every value at least 0.6 hPa from any isobar level, so the rounded
@@ -688,9 +660,8 @@
       if (Math.abs(v[i] - X) < 0.6) v[i] = v[i] >= X ? X + 0.6 + rng() * 0.2 : X - 0.6 - rng() * 0.2;
       v[i] = Math.round(v[i] * 10) / 10;
     }
-    for (k = 0; k < S.E.length; k++) if (levelsCrossing(v[S.E[k].a], v[S.E[k].b]) > 1) return false;
+    for (k = 0; k < S.E.length; k++) if (levelsCrossing(v[S.E[k].a], v[S.E[k].b]) > m.maxCross) return false;
 
-    // pick stations
     var nSt = ri(rng, m.stations[0], m.stations[1]);
     var order = [];
     for (i = 0; i < N; i++) order.push(i);
@@ -704,7 +675,6 @@
     for (var L = Math.ceil(lo / INTERVAL) * INTERVAL; L < hi; L += INTERVAL) if (L > lo) levels.push(L);
     if (levels.length < range[0] || levels.length > range[1]) return false;
     if (want && levels.length !== want) return false;
-    // every level needs at least two stations on each side
     for (k = 0; k < levels.length; k++) {
       var below = 0, above = 0;
       for (i = 0; i < N; i++) if (station[i]) { if (v[i] < levels[k]) below++; else above++; }
@@ -714,94 +684,220 @@
     return true;
   }
 
-  // ---------- segment bookkeeping ----------
-  function segsAt(e) {
-    var out = [];
-    S.segs.forEach(function (s) { if (s.a === e || s.b === e) out.push(s); });
-    return out;
+  // ---------- geometry ----------
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+  function distPtSeg(p, a, b) {
+    var dx = b.x - a.x, dy = b.y - a.y, l2 = dx * dx + dy * dy;
+    var t = l2 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / l2)) : 0;
+    return Math.hypot(a.x + dx * t - p.x, a.y + dy * t - p.y);
   }
-  function segsInCell(c) {
-    var out = [];
-    S.segs.forEach(function (s) { if (s.cell === c) out.push(s); });
-    return out;
+  function distPtLine(p, pts) {
+    var d = Infinity;
+    for (var i = 1; i < pts.length; i++) d = Math.min(d, distPtSeg(p, pts[i - 1], pts[i]));
+    return pts.length === 1 ? dist(p, pts[0]) : d;
   }
+  function orient(o, a, b) { return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x); }
+  function intersect(a, b, c, d) {
+    var d1 = orient(c, d, a), d2 = orient(c, d, b), d3 = orient(a, b, c), d4 = orient(a, b, d);
+    if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+      var t = d1 / (d1 - d2);
+      return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+    }
+    return null;
+  }
+  function pathLength(pts) { var L = 0; for (var i = 1; i < pts.length; i++) L += dist(pts[i - 1], pts[i]); return L; }
 
-  function canAdd(a, b, lvl) {
-    if (a === b) return { ok: false };
-    var cell = sharedCell(a, b);
-    if (cell < 0) return { ok: false };
-    if (S.segs.has(segKey(a, b))) return { ok: false };
-    var pts = [a, b];
-    for (var p = 0; p < 2; p++) {
-      var e = pts[p], at = segsAt(e);
-      for (var k = 0; k < at.length; k++) {
-        if (at[k].lvl !== lvl) return { ok: false, reason: 'Isobaren dürfen sich nicht berühren' };
-        if (at[k].cell === cell) return { ok: false, reason: 'Die Linie muss die Kante überqueren, nicht umkehren' };
+  function rdp(pts, eps) {
+    if (pts.length < 3) return pts.slice();
+    var dmax = 0, idx = 0, a = pts[0], b = pts[pts.length - 1];
+    for (var i = 1; i < pts.length - 1; i++) {
+      var d = distPtSeg(pts[i], a, b);
+      if (d > dmax) { dmax = d; idx = i; }
+    }
+    if (dmax <= eps) return [a, b];
+    var l = rdp(pts.slice(0, idx + 1), eps), r = rdp(pts.slice(idx), eps);
+    return l.slice(0, -1).concat(r);
+  }
+  // Chaikin corner cutting; keeps both end points where they are.
+  function chaikin(pts, iters) {
+    for (var k = 0; k < iters && pts.length > 2; k++) {
+      var out = [pts[0]];
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p = pts[i], q = pts[i + 1];
+        out.push({ x: 0.75 * p.x + 0.25 * q.x, y: 0.75 * p.y + 0.25 * q.y });
+        out.push({ x: 0.25 * p.x + 0.75 * q.x, y: 0.25 * p.y + 0.75 * q.y });
       }
-      if (at.length >= (S.E[e].boundary ? 1 : 2)) return { ok: false, reason: 'Hier läuft schon eine Linie durch' };
+      out.push(pts[pts.length - 1]);
+      pts = out;
     }
-    var nt = [sideOf(S.C[cell], a), sideOf(S.C[cell], b)].sort().join('');
-    var inCell = segsInCell(cell);
-    for (var q = 0; q < inCell.length; q++) {
-      var ot = segType(inCell[q]);
-      if ((nt === 'BT' && ot === 'LR') || (nt === 'LR' && ot === 'BT')) return { ok: false, reason: 'Isobaren dürfen sich nicht kreuzen' };
+    return pts;
+  }
+  function resample(pts, step) {
+    var out = [pts[0]], carry = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b = pts[i], L = dist(a, b), t = step - carry;
+      while (t <= L) { out.push({ x: a.x + (b.x - a.x) * t / L, y: a.y + (b.y - a.y) * t / L }); t += step; }
+      carry = L - (t - step);
     }
-    return { ok: true, cell: cell };
+    if (dist(out[out.length - 1], pts[pts.length - 1]) > 1e-6) out.push(pts[pts.length - 1]);
+    return out;
   }
 
-  function addSeg(a, b, lvl, cell) {
-    S.segs.set(segKey(a, b), { a: a, b: b, lvl: lvl, cell: cell });
+  function clampPt(p) {
+    return { x: Math.max(0, Math.min(S.W - 1, p.x)), y: Math.max(0, Math.min(S.H - 1, p.y)) };
+  }
+  function borderDist(p) { return Math.min(p.x, S.W - 1 - p.x, p.y, S.H - 1 - p.y); }
+  function onBorder(p) { return borderDist(p) < 1e-6; }
+  function projectBorder(p) {
+    var d = [p.x, S.W - 1 - p.x, p.y, S.H - 1 - p.y], k = d.indexOf(Math.min.apply(null, d));
+    return k === 0 ? { x: 0, y: p.y } : k === 1 ? { x: S.W - 1, y: p.y } : k === 2 ? { x: p.x, y: 0 } : { x: p.x, y: S.H - 1 };
+  }
+
+  // ---------- lines ----------
+  function looseEnds(except) {
+    var out = [];
+    S.lines.forEach(function (L) {
+      if (L === except || L.closed) return;
+      var a = L.pts[0], b = L.pts[L.pts.length - 1];
+      if (!onBorder(a)) out.push({ line: L, first: true, p: a });
+      if (!onBorder(b)) out.push({ line: L, first: false, p: b });
+    });
+    return out;
+  }
+  function nearestLooseEnd(p, maxD, lvl, except) {
+    var best = null, bd = maxD;
+    looseEnds(except).forEach(function (e) {
+      if (lvl !== undefined && e.line.lvl !== lvl) return;
+      var d = dist(p, e.p);
+      if (d < bd) { bd = d; best = e; }
+    });
+    return best;
+  }
+
+  // Snap a line's ends to the rim, close it into a ring, or join it to a
+  // loose end of another line of the same level.
+  function tidy(L) {
+    for (var round = 0; round < 4 && !L.closed; round++) {
+      var changed = false;
+      var first = L.pts[0], last = L.pts[L.pts.length - 1];
+      if (!onBorder(first) && !onBorder(last) && dist(first, last) < SNAP && pathLength(L.pts) > 1.2) {
+        L.pts.push({ x: first.x, y: first.y }); L.closed = true; break;
+      }
+      for (var end = 0; end < 2; end++) {
+        var isFirst = end === 0, p = isFirst ? L.pts[0] : L.pts[L.pts.length - 1];
+        if (onBorder(p)) continue;
+        var other = nearestLooseEnd(p, SNAP, L.lvl, L);
+        if (other && dist(p, other.p) <= borderDist(p)) {
+          var M = other.line, mp = M.pts.slice();
+          if (isFirst) L.pts.reverse();
+          if (!other.first) mp.reverse();
+          L.pts = L.pts.concat(mp);
+          S.lines.splice(S.lines.indexOf(M), 1);
+          changed = true; break;
+        }
+        if (borderDist(p) < SNAP) {
+          var q = projectBorder(p);
+          if (isFirst) L.pts.unshift(q); else L.pts.push(q);
+          changed = true;
+        }
+      }
+      if (!changed) break;
+    }
+  }
+
+  function processStroke(raw) {
+    var pts = rdp(raw, 0.06);
+    pts = chaikin(pts, 3);
+    return pts.map(clampPt);
+  }
+
+  function recompute() {
+    // loose ends
+    S.open = [];
+    S.lines.forEach(function (L) {
+      if (L.closed) return;
+      [L.pts[0], L.pts[L.pts.length - 1]].forEach(function (p) { if (!onBorder(p)) S.open.push({ x: p.x, y: p.y, lvl: L.lvl }); });
+    });
+    // crossings between any two stretches of line (also a line with itself)
+    var segs = [];
+    S.lines.forEach(function (L, li) {
+      for (var i = 1; i < L.pts.length; i++) {
+        var a = L.pts[i - 1], b = L.pts[i];
+        segs.push({ li: li, i: i, a: a, b: b, n: L.pts.length, closed: L.closed,
+          x0: Math.min(a.x, b.x), x1: Math.max(a.x, b.x), y0: Math.min(a.y, b.y), y1: Math.max(a.y, b.y) });
+      }
+    });
+    var out = [];
+    for (var s = 0; s < segs.length; s++) {
+      var A = segs[s];
+      for (var t = s + 1; t < segs.length; t++) {
+        var B = segs[t];
+        if (B.x0 > A.x1 || B.x1 < A.x0 || B.y0 > A.y1 || B.y1 < A.y0) continue;
+        if (A.li === B.li) {
+          var gap = Math.abs(A.i - B.i);
+          if (gap <= 1 || (A.closed && gap === A.n - 2)) continue;
+        }
+        var X = intersect(A.a, A.b, B.a, B.b);
+        if (X && !out.some(function (o) { return dist(o, X) < 0.15; })) out.push(X);
+      }
+    }
+    S.crossings = out;
   }
 
   function snapshot() {
-    var arr = [];
-    S.segs.forEach(function (s) { arr.push([s.a, s.b, s.lvl, s.cell]); });
-    return arr;
+    return S.lines.map(function (L) { return { lvl: L.lvl, closed: L.closed, pts: L.pts.map(function (p) { return { x: p.x, y: p.y }; }) }; });
   }
-  function restore(arr) {
-    S.segs = new Map();
-    arr.forEach(function (x) { addSeg(x[0], x[1], x[2], x[3]); });
-  }
+  function restore(arr) { S.lines = arr; recompute(); }
 
   // ---------- evaluation ----------
-  function makeUF(n) {
-    var p = []; for (var i = 0; i < n; i++) p.push(i);
-    function find(x) { while (p[x] !== x) { p[x] = p[p[x]]; x = p[x]; } return x; }
-    return { find: find, union: function (a, b) { a = find(a); b = find(b); if (a !== b) p[a] = b; } };
+  function regionLabels(X) {
+    var gw = (S.W - 1) * RASTER + 1, gh = (S.H - 1) * RASTER + 1, blk = new Uint8Array(gw * gh);
+    function plot(x, y) { if (x >= 0 && y >= 0 && x < gw && y < gh) blk[y * gw + x] = 1; }
+    S.lines.forEach(function (L) {
+      if (L.lvl !== X) return;
+      for (var i = 1; i < L.pts.length; i++) {
+        // Bresenham: an 8-connected line that a 4-connected fill cannot leak through
+        var x0 = Math.round(L.pts[i - 1].x * RASTER), y0 = Math.round(L.pts[i - 1].y * RASTER);
+        var x1 = Math.round(L.pts[i].x * RASTER), y1 = Math.round(L.pts[i].y * RASTER);
+        var dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, err = dx + dy;
+        for (;;) {
+          plot(x0, y0);
+          if (x0 === x1 && y0 === y1) break;
+          var e2 = 2 * err;
+          if (e2 >= dy) { err += dy; x0 += sx; }
+          if (e2 <= dx) { err += dx; y0 += sy; }
+        }
+      }
+    });
+    var lab = new Int32Array(gw * gh).fill(-1), n = 0, stack = [];
+    for (var s = 0; s < gw * gh; s++) {
+      if (blk[s] || lab[s] >= 0) continue;
+      lab[s] = n; stack.push(s);
+      while (stack.length) {
+        var c = stack.pop(), cx = c % gw, cy = (c - cx) / gw;
+        if (cx > 0 && !blk[c - 1] && lab[c - 1] < 0) { lab[c - 1] = n; stack.push(c - 1); }
+        if (cx < gw - 1 && !blk[c + 1] && lab[c + 1] < 0) { lab[c + 1] = n; stack.push(c + 1); }
+        if (cy > 0 && !blk[c - gw] && lab[c - gw] < 0) { lab[c - gw] = n; stack.push(c - gw); }
+        if (cy < gh - 1 && !blk[c + gw] && lab[c + gw] < 0) { lab[c + gw] = n; stack.push(c + gw); }
+      }
+      n++;
+    }
+    return function (node) {
+      var i = node % S.W, j = Math.floor(node / S.W), cx = i * RASTER, cy = j * RASTER;
+      // a line drawn right over a station: take the nearest free pixel
+      for (var r = 0; r <= 4; r++) for (var dy = -r; dy <= r; dy++) for (var dx = -r; dx <= r; dx++) {
+        var x = cx + dx, y = cy + dy;
+        if (x >= 0 && y >= 0 && x < gw && y < gh && lab[y * gw + x] >= 0) return lab[y * gw + x];
+      }
+      return -1 - node;
+    };
   }
 
-  function openEnds() {
-    var out = [];
-    for (var e = 0; e < S.E.length; e++) {
-      var at = segsAt(e);
-      if (at.length === 1 && !S.E[e].boundary) out.push({ e: e, lvl: at[0].lvl });
-    }
-    return out;
-  }
-
-  // Which edges does level X cut? Only midpoints that the line actually
-  // passes through (two segments) or ends at on the rim; a dangling end
-  // inside the field leaves a gap the pressure can flow around.
-  function componentsFor(X) {
-    var N = S.vals.length, uf = makeUF(N), e, k;
-    for (e = 0; e < S.E.length; e++) {
-      var at = segsAt(e).filter(function (s) { return s.lvl === X; });
-      var cut = at.length === 2 || (at.length === 1 && S.E[e].boundary);
-      if (!cut) uf.union(S.E[e].a, S.E[e].b);
-    }
-    for (k = 0; k < S.C.length; k++) {
-      var c = S.C[k], types = segsInCell(k).filter(function (s) { return s.lvl === X; }).map(segType);
-      if (types.every(function (t) { return t === 'RT' || t === 'BL'; })) uf.union(c.TL, c.BR);
-      if (types.every(function (t) { return t === 'LT' || t === 'BR'; })) uf.union(c.TR, c.BL);
-    }
-    return uf;
-  }
-
-  function referenceEdges(X) {
-    // Marching squares on the full hidden field, snapped to edge midpoints.
-    var set = new Set(), segs = [];
+  function referenceSegs(X) {
+    // Marching squares with linear interpolation on the full hidden field.
+    var segs = [], v = S.vals;
     for (var k = 0; k < S.C.length; k++) {
-      var c = S.C[k], v = S.vals;
+      var c = S.C[k];
       var cr = {
         T: (v[c.TL] - X) * (v[c.TR] - X) < 0,
         R: (v[c.TR] - X) * (v[c.BR] - X) < 0,
@@ -809,34 +905,52 @@
         L: (v[c.BL] - X) * (v[c.TL] - X) < 0
       };
       var sides = ['T', 'R', 'B', 'L'].filter(function (s) { return cr[s]; });
-      sides.forEach(function (s) { set.add(c[s]); });
-      if (sides.length === 2) segs.push([c[sides[0]], c[sides[1]], k]);
+      if (sides.length === 2) segs.push([c[sides[0]], c[sides[1]]]);
       else if (sides.length === 4) {
         var centre = (v[c.TL] + v[c.TR] + v[c.BR] + v[c.BL]) / 4;
-        if ((centre - X) * (v[c.TL] - X) > 0) { segs.push([c.T, c.R, k]); segs.push([c.B, c.L, k]); }
-        else { segs.push([c.T, c.L, k]); segs.push([c.B, c.R, k]); }
+        if ((centre - X) * (v[c.TL] - X) > 0) { segs.push([c.T, c.R]); segs.push([c.B, c.L]); }
+        else { segs.push([c.T, c.L]); segs.push([c.B, c.R]); }
       }
     }
-    return { set: set, segs: segs };
+    return segs.map(function (sg) { return [refPoint(sg[0], X), refPoint(sg[1], X), sg[0], sg[1]]; });
+  }
+  function refPoint(e, X) {
+    var E0 = S.E[e], va = S.vals[E0.a], vb = S.vals[E0.b], t = (X - va) / (vb - va);
+    var ax = E0.a % S.W, ay = Math.floor(E0.a / S.W), bx = E0.b % S.W, by = Math.floor(E0.b / S.W);
+    return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
+  }
+  // Chain the reference pieces into polylines (used by the test hook).
+  function referenceLines(X) {
+    var segs = referenceSegs(X), used = new Array(segs.length).fill(false), out = [];
+    function find(e) { for (var i = 0; i < segs.length; i++) if (!used[i] && (segs[i][2] === e || segs[i][3] === e)) return i; return -1; }
+    for (var s = 0; s < segs.length; s++) {
+      if (used[s]) continue;
+      used[s] = true;
+      var ids = [segs[s][2], segs[s][3]], pts = [segs[s][0], segs[s][1]];
+      for (var dir = 0; dir < 2; dir++) {
+        for (;;) {
+          var endE = ids[ids.length - 1], k = find(endE);
+          if (k < 0) break;
+          used[k] = true;
+          var nextE = segs[k][2] === endE ? segs[k][3] : segs[k][2], nextP = segs[k][2] === endE ? segs[k][1] : segs[k][0];
+          ids.push(nextE); pts.push(nextP);
+        }
+        ids.reverse(); pts.reverse();
+      }
+      out.push({ lvl: X, pts: pts, closed: ids[0] === ids[ids.length - 1] });
+    }
+    return out;
   }
 
-  function nearSet(e, set) {
-    if (set.has(e)) return true;
-    var cells = S.E[e].cells;
-    for (var i = 0; i < cells.length; i++) {
-      var c = S.C[cells[i]];
-      if (set.has(c.T) || set.has(c.B) || set.has(c.L) || set.has(c.R)) return true;
-    }
-    return false;
-  }
+  function closeness(d) { return Math.max(0, 1 - d / 0.8); }
 
   function evaluate() {
-    var N = S.vals.length, res = { levels: [], wrong: new Set(), open: openEnds() };
+    var N = S.vals.length, res = { levels: [], wrong: new Set(), open: S.open.slice(), crossings: S.crossings.slice() };
     var pairsTot = 0, pairsSep = 0, refW = 0, refAcc = 0;
     S.levels.forEach(function (X) {
-      var uf = componentsFor(X), comp = {}, below = 0, above = 0, i;
+      var region = regionLabels(X), comp = {}, below = 0, above = 0, i;
       for (i = 0; i < N; i++) if (S.station[i]) {
-        var r = uf.find(i);
+        var r = region(i);
         comp[r] = comp[r] || { lo: [], hi: [] };
         if (S.vals[i] < X) { comp[r].lo.push(i); below++; } else { comp[r].hi.push(i); above++; }
       }
@@ -854,38 +968,54 @@
       var tot = below * above;
       pairsTot += tot; pairsSep += tot - bad;
 
-      var mine = new Set();
-      S.segs.forEach(function (s) { if (s.lvl === X) { mine.add(s.a); mine.add(s.b); } });
-      var ref = referenceEdges(X).set, prec = 0, rec = 0;
-      mine.forEach(function (e) { if (nearSet(e, ref)) prec++; });
-      ref.forEach(function (e) { if (nearSet(e, mine)) rec++; });
-      prec = mine.size ? prec / mine.size : 0;
-      rec = ref.size ? rec / ref.size : 0;
+      // closeness to the reference, both ways round
+      var mine = S.lines.filter(function (L) { return L.lvl === X; });
+      var ref = referenceSegs(X), refLen = 0;
+      ref.forEach(function (sg) { refLen += dist(sg[0], sg[1]); });
+      var prec = 0, rec = 0, np = 0, nr = 0;
+      mine.forEach(function (L) {
+        resample(L.pts, 0.15).forEach(function (p) {
+          var d = Infinity;
+          ref.forEach(function (sg) { d = Math.min(d, distPtSeg(p, sg[0], sg[1])); });
+          prec += closeness(d); np++;
+        });
+      });
+      ref.forEach(function (sg) {
+        resample([sg[0], sg[1]], 0.15).forEach(function (p) {
+          var d = Infinity;
+          mine.forEach(function (L) { d = Math.min(d, distPtLine(p, L.pts)); });
+          rec += closeness(d); nr++;
+        });
+      });
+      prec = np ? prec / np : 0; rec = nr ? rec / nr : 0;
       var f1 = prec + rec > 0 ? 2 * prec * rec / (prec + rec) : 0;
-      refW += ref.size; refAcc += f1 * ref.size;
+      refW += refLen; refAcc += f1 * refLen;
 
-      res.levels.push({ X: X, drawn: mine.size > 0, sep: tot ? 1 - bad / tot : 1, wrong: wrongHere.length, below: below, above: above });
+      res.levels.push({ X: X, drawn: mine.length > 0, sep: tot ? 1 - bad / tot : 1, wrong: wrongHere.length, below: below, above: above });
     });
     res.sep = pairsTot ? pairsSep / pairsTot : 0;
     res.ref = refW ? refAcc / refW : 0;
 
-    // smoothness: turn angle at every interior point of every line
+    // smoothness: turning angle along every line, sampled every 0.2 cells;
+    // gentle bends are free, sharp kinks cost
     var nTurn = 0, pen = 0;
-    for (var e = 0; e < S.E.length; e++) {
-      var at = segsAt(e);
-      if (at.length !== 2) continue;
-      var M = S.E[e], P1 = S.E[at[0].a === e ? at[0].b : at[0].a], P2 = S.E[at[1].a === e ? at[1].b : at[1].a];
-      var v1x = M.x - P1.x, v1y = M.y - P1.y, v2x = P2.x - M.x, v2y = P2.y - M.y;
-      var cos = (v1x * v2x + v1y * v2y) / Math.hypot(v1x, v1y) / Math.hypot(v2x, v2y);
-      var ang = Math.acos(Math.max(-1, Math.min(1, cos))) * 180 / Math.PI;
-      nTurn++; pen += Math.pow(Math.min(ang, 90) / 90, 2);
-    }
-    res.smooth = S.segs.size === 0 ? 0 : nTurn ? 1 - pen / nTurn : 1;
+    S.lines.forEach(function (L) {
+      var q = resample(L.pts, 0.2);
+      if (L.closed && q.length > 3) q = q.concat([q[1]]);
+      for (var i = 1; i < q.length - 1; i++) {
+        var v1x = q[i].x - q[i - 1].x, v1y = q[i].y - q[i - 1].y, v2x = q[i + 1].x - q[i].x, v2y = q[i + 1].y - q[i].y;
+        var l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
+        if (l1 < 0.05 || l2 < 0.05) continue;
+        var ang = Math.acos(Math.max(-1, Math.min(1, (v1x * v2x + v1y * v2y) / l1 / l2))) * 180 / Math.PI;
+        nTurn++; pen += Math.pow(Math.min(1, Math.max(0, ang - 20) / 50), 2);
+      }
+    });
+    res.smooth = S.lines.length === 0 ? 0 : nTurn ? 1 - pen / nTurn : 1;
 
     var pts = 60 * res.sep + 25 * res.ref + 15 * res.smooth;
-    pts -= 10 * res.open.length;
+    pts -= 10 * res.open.length + 15 * res.crossings.length;
     if (S.hintUsed && !mode().hint) pts -= 10;
-    if (S.segs.size === 0) pts = 0;
+    if (S.lines.length === 0) pts = 0;
     res.score = Math.max(0, Math.round(pts));
     return res;
   }
@@ -898,14 +1028,13 @@
   var ctx = canvas.getContext('2d');
   var badge = document.getElementById('badge');
   var G = { s: 40, ox: 0, oy: 0, w: 0, h: 0, dpr: 1 };
-  var hover = -1, flashMsg = null, flashTimer = null;
+  var drag = null, hover = null, flashMsg = null, flashTimer = null;
 
   function layout() {
     var w = stage.clientWidth;
-    var cellsW = S.W - 1 + 2 * PAD, cellsH = S.H - 1 + 2 * PAD;
-    var s = w / cellsW;
+    var s = w / (S.W - 1 + 2 * PAD);
     var topRoom = 34; // space for the hint badge
-    var h = s * cellsH + topRoom;
+    var h = s * (S.H - 1 + 2 * PAD) + topRoom;
     stage.style.height = h + 'px';
     G.s = s; G.ox = PAD * s; G.oy = PAD * s + topRoom; G.w = w; G.h = h;
     G.dpr = Math.min(window.devicePixelRatio || 1, 3);
@@ -934,25 +1063,37 @@
     ctx.fillText(text, x, y + fs * 0.04);
   }
 
-  function lines() {
-    // connected chains of segments, per level (for labels)
-    var seen = new Set(), out = [];
-    S.segs.forEach(function (s0, k0) {
-      if (seen.has(k0)) return;
-      var stack = [s0], chain = [];
-      seen.add(k0);
-      while (stack.length) {
-        var s = stack.pop(); chain.push(s);
-        [s.a, s.b].forEach(function (e) {
-          segsAt(e).forEach(function (t) {
-            var k = segKey(t.a, t.b);
-            if (!seen.has(k) && t.lvl === s.lvl) { seen.add(k); stack.push(t); }
-          });
-        });
-      }
-      out.push({ lvl: s0.lvl, segs: chain });
+  function tracePath(pts) {
+    ctx.beginPath();
+    ctx.moveTo(px(pts[0].x), py(pts[0].y));
+    if (pts.length < 3) { for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i].x), py(pts[i].y)); return; }
+    // quadratic curves through the midpoints: smooth even for the raw live stroke
+    for (var k = 1; k < pts.length - 1; k++) {
+      var mx = (pts[k].x + pts[k + 1].x) / 2, my = (pts[k].y + pts[k + 1].y) / 2;
+      ctx.quadraticCurveTo(px(pts[k].x), py(pts[k].y), px(mx), py(my));
+    }
+    ctx.lineTo(px(pts[pts.length - 1].x), py(pts[pts.length - 1].y));
+  }
+
+  // Where along a line to put its label: of a few candidates, the one
+  // farthest from any station, so the tag never hides a number.
+  function labelPoint(pts) {
+    var best = null, bd = -1;
+    [0.5, 0.35, 0.65, 0.2, 0.8].forEach(function (f) {
+      var q = pointAt(pts, f), d = Infinity;
+      for (var n = 0; n < S.vals.length; n++) if (S.station[n]) d = Math.min(d, dist(q, { x: n % S.W, y: Math.floor(n / S.W) }));
+      if (d > bd + 0.05) { bd = d; best = q; }
     });
-    return out;
+    return best;
+  }
+  function pointAt(pts, frac) {
+    var half = pathLength(pts) * frac, acc = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var d = dist(pts[i - 1], pts[i]);
+      if (acc + d >= half) { var t = (half - acc) / d; return { x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * t, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * t }; }
+      acc += d;
+    }
+    return pts[0];
   }
 
   function draw() {
@@ -961,8 +1102,8 @@
     ctx.fillStyle = '#f2e2c0';
     ctx.fillRect(0, 0, G.w, G.h);
 
-    // node grid
-    ctx.strokeStyle = 'rgba(17,17,17,.13)'; ctx.lineWidth = 1;
+    // grid
+    ctx.strokeStyle = 'rgba(17,17,17,.1)'; ctx.lineWidth = 1;
     ctx.beginPath();
     for (i = 0; i < S.W; i++) { ctx.moveTo(px(i), py(0)); ctx.lineTo(px(i), py(S.H - 1)); }
     for (j = 0; j < S.H; j++) { ctx.moveTo(px(0), py(j)); ctx.lineTo(px(S.W - 1), py(j)); }
@@ -970,55 +1111,35 @@
     ctx.strokeStyle = 'rgba(17,17,17,.55)'; ctx.lineWidth = 2;
     ctx.strokeRect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s);
 
-    // snap points
-    if (!S.locked) {
-      ctx.fillStyle = 'rgba(17,17,17,.22)';
-      for (i = 0; i < S.E.length; i++) {
-        ctx.beginPath(); ctx.arc(px(S.E[i].x), py(S.E[i].y), Math.max(1.2, s * 0.03), 0, Math.PI * 2); ctx.fill();
-      }
-    }
-
-    // reference overlay (true interpolated positions)
+    // reference overlay
     if (S.showRef) {
       ctx.save();
       ctx.setLineDash([s * 0.12, s * 0.1]); ctx.lineWidth = Math.max(1.5, s * 0.05); ctx.lineCap = 'round';
       S.levels.forEach(function (X) {
-        ctx.strokeStyle = levelColor(X); ctx.globalAlpha = 0.9;
+        ctx.strokeStyle = levelColor(X);
         ctx.beginPath();
-        referenceEdges(X).segs.forEach(function (sg) {
-          var p = refPoint(sg[0], X), q = refPoint(sg[1], X);
-          ctx.moveTo(px(p.x), py(p.y)); ctx.lineTo(px(q.x), py(q.y));
-        });
+        referenceSegs(X).forEach(function (sg) { ctx.moveTo(px(sg[0].x), py(sg[0].y)); ctx.lineTo(px(sg[1].x), py(sg[1].y)); });
         ctx.stroke();
       });
       ctx.restore();
     }
 
     // player's isobars
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     var lw = Math.max(2.5, s * 0.085);
-    S.segs.forEach(function (sg) {
-      var A = S.E[sg.a], B = S.E[sg.b];
-      ctx.strokeStyle = levelColor(sg.lvl); ctx.lineWidth = lw;
-      ctx.beginPath(); ctx.moveTo(px(A.x), py(A.y)); ctx.lineTo(px(B.x), py(B.y)); ctx.stroke();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    S.lines.forEach(function (L) {
+      ctx.strokeStyle = levelColor(L.lvl);
+      ctx.lineWidth = (hover === L && S.tool === 'eraser') ? lw * 1.8 : lw;
+      ctx.globalAlpha = (hover === L && S.tool === 'eraser') ? 0.5 : 1;
+      tracePath(L.pts); ctx.stroke();
     });
-
-    // open ends (always shown: they are an error at any time)
-    openEnds().forEach(function (o) {
-      var E0 = S.E[o.e];
-      ctx.beginPath(); ctx.arc(px(E0.x), py(E0.y), lw * 1.3, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff'; ctx.fill();
-      ctx.lineWidth = 2; ctx.strokeStyle = levelColor(o.lvl); ctx.stroke();
-    });
-
-    // hover
-    if (hover >= 0 && !S.locked) {
-      var H0 = S.E[hover];
-      ctx.beginPath(); ctx.arc(px(H0.x), py(H0.y), s * 0.14, 0, Math.PI * 2);
-      ctx.lineWidth = 2; ctx.strokeStyle = S.tool === 'eraser' ? '#df2a1e' : levelColor(S.active); ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (drag && drag.raw && drag.raw.length > 1) {
+      ctx.strokeStyle = levelColor(S.active); ctx.lineWidth = lw;
+      tracePath(drag.raw); ctx.stroke();
     }
 
-    // stations and hidden nodes
+    // stations and hidden grid points
     var fs = Math.max(9, Math.min(13, s * 0.25));
     var hintLvl = (S.hintOn || mode().hint) ? S.active : null;
     for (var n = 0; n < S.vals.length; n++) {
@@ -1035,51 +1156,45 @@
         ctx.fillText(txt, x, y);
       } else {
         ctx.beginPath(); ctx.arc(x, y, Math.max(1.6, s * 0.04), 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(17,17,17,.4)'; ctx.fill();
+        ctx.fillStyle = 'rgba(17,17,17,.35)'; ctx.fill();
       }
     }
 
-    // line labels: one per connected line, at its middle segment
+    // one label per line, halfway along it
     if (!drag) {
-      lines().forEach(function (ln) {
-        if (ln.segs.length < 3) return;
-        var sg = ln.segs[Math.floor(ln.segs.length / 2)], A = S.E[sg.a], B = S.E[sg.b];
-        pill(String(ln.lvl), px((A.x + B.x) / 2), py((A.y + B.y) / 2), fs * 0.8, '#f2e2c0', levelColor(ln.lvl), levelColor(ln.lvl), 1.5);
+      S.lines.forEach(function (L) {
+        if (pathLength(L.pts) < 1) return;
+        var m = labelPoint(L.pts);
+        pill(String(L.lvl), px(m.x), py(m.y), fs * 0.8, '#f2e2c0', levelColor(L.lvl), levelColor(L.lvl), 1.5);
       });
     }
-  }
+    // loose ends: an isobar never stops in the middle of the field
+    S.open.forEach(function (o) {
+      ctx.beginPath(); ctx.arc(px(o.x), py(o.y), lw * 1.35, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = levelColor(o.lvl); ctx.stroke();
+    });
+    // crossings
+    S.crossings.forEach(function (c) {
+      var r = lw * 1.4, x = px(c.x), y = py(c.y);
+      ctx.beginPath(); ctx.arc(x, y, r * 1.25, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.strokeStyle = '#df2a1e'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x - r * 0.7, y - r * 0.7); ctx.lineTo(x + r * 0.7, y + r * 0.7);
+      ctx.moveTo(x + r * 0.7, y - r * 0.7); ctx.lineTo(x - r * 0.7, y + r * 0.7); ctx.stroke();
+    });
 
-  function refPoint(e, X) {
-    var E0 = S.E[e], va = S.vals[E0.a], vb = S.vals[E0.b], t = (X - va) / (vb - va);
-    var ax = E0.a % S.W, ay = Math.floor(E0.a / S.W), bx = E0.b % S.W, by = Math.floor(E0.b / S.W);
-    return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
   }
 
   // ================================================================
   //  Input
   // ================================================================
-  var drag = null;
-
   function toBoard(ev) {
     var r = canvas.getBoundingClientRect();
     return { x: (ev.clientX - r.left - G.ox) / G.s, y: (ev.clientY - r.top - G.oy) / G.s };
   }
-  function nearestEdge(p, maxD) {
-    var best = -1, bd = maxD;
-    for (var i = 0; i < S.E.length; i++) {
-      var d = Math.hypot(S.E[i].x - p.x, S.E[i].y - p.y);
-      if (d < bd) { bd = d; best = i; }
-    }
-    return best;
-  }
-  function distToSeg(p, sg) {
-    var A = S.E[sg.a], B = S.E[sg.b], dx = B.x - A.x, dy = B.y - A.y;
-    var t = Math.max(0, Math.min(1, ((p.x - A.x) * dx + (p.y - A.y) * dy) / (dx * dx + dy * dy)));
-    return Math.hypot(A.x + dx * t - p.x, A.y + dy * t - p.y);
-  }
-  function segNear(p, maxD) {
+  function lineNear(p, maxD) {
     var best = null, bd = maxD;
-    S.segs.forEach(function (sg, k) { var d = distToSeg(p, sg); if (d < bd) { bd = d; best = k; } });
+    S.lines.forEach(function (L) { var d = distPtLine(p, L.pts); if (d < bd) { bd = d; best = L; } });
     return best;
   }
 
@@ -1091,36 +1206,13 @@
   }
 
   function edited() {
-    if (S.result) { S.result = null; S.showRef = false; document.getElementById('result').hidden = true; }
+    if (S.result) { S.result = null; S.showRef = false; document.getElementById('result').hidden = true; renderLevels(); }
   }
 
   function eraseAt(p) {
-    var k = segNear(p, 0.22), changed = false;
-    while (k) { S.segs.delete(k); changed = true; k = segNear(p, 0.22); }
+    var L = lineNear(p, 0.25), changed = false;
+    while (L) { S.lines.splice(S.lines.indexOf(L), 1); changed = true; L = lineNear(p, 0.25); }
     return changed;
-  }
-
-  function stepTo(p) {
-    if (S.tool === 'eraser') { if (eraseAt(p)) drag.changed = true; return; }
-    var e = nearestEdge(p, CAPTURE);
-    if (e < 0 || e === drag.last) return;
-    if (drag.last < 0) { drag.last = e; return; }
-    var added = drag.added;
-    // Dragging back over the piece you just drew takes it back.
-    if (added.length && added[added.length - 1].from === e && added[added.length - 1].to === drag.last) {
-      S.segs.delete(segKey(e, drag.last));
-      added.pop(); drag.last = e; drag.changed = true;
-      return;
-    }
-    if (sharedCell(drag.last, e) < 0) { drag.last = e; return; } // jumped: start afresh there
-    var r = canAdd(drag.last, e, S.active);
-    if (r.ok) {
-      addSeg(drag.last, e, S.active, r.cell);
-      added.push({ from: drag.last, to: e });
-      drag.last = e; drag.changed = true;
-    } else if (r.reason) {
-      flash(r.reason);
-    }
   }
 
   canvas.addEventListener('pointerdown', function (ev) {
@@ -1128,17 +1220,21 @@
     ev.preventDefault();
     canvas.setPointerCapture(ev.pointerId);
     var p = toBoard(ev);
-    drag = { id: ev.pointerId, p0: p, prev: p, moved: false, last: -1, added: [], changed: false, before: snapshot() };
+    drag = { id: ev.pointerId, p0: p, moved: false, changed: false, before: snapshot(), raw: null, cont: null };
     if (S.tool === 'pen') {
-      var e = nearestEdge(p, CAPTURE);
-      if (e >= 0) {
-        var at = segsAt(e);
-        // Starting on the loose end of an existing line continues that line.
-        if (at.length === 1 && at[0].lvl !== S.active) { S.active = at[0].lvl; renderLevels(); }
-        drag.last = e;
+      // Starting on a loose end carries that line on, whatever its level.
+      var e = nearestLooseEnd(p, SNAP);
+      if (e) {
+        drag.cont = e.line;
+        if (e.first) e.line.pts.reverse();
+        if (e.line.lvl !== S.active) { S.active = e.line.lvl; renderLevels(); }
+        var endP = e.line.pts[e.line.pts.length - 1];
+        drag.raw = [{ x: endP.x, y: endP.y }];
+      } else {
+        drag.raw = [clampPt(p)];
       }
-    } else {
-      if (eraseAt(p)) drag.changed = true;
+    } else if (eraseAt(p)) {
+      drag.changed = true; recompute();
     }
     draw();
   });
@@ -1146,38 +1242,53 @@
   canvas.addEventListener('pointermove', function (ev) {
     var p = toBoard(ev);
     if (!drag || drag.id !== ev.pointerId) {
-      if (ev.pointerType === 'mouse' && !S.locked) {
-        var h = nearestEdge(p, CAPTURE);
+      if (ev.pointerType === 'mouse' && S.tool === 'eraser' && !S.locked) {
+        var h = lineNear(p, 0.25);
         if (h !== hover) { hover = h; draw(); }
       }
       return;
     }
-    if (Math.hypot(p.x - drag.p0.x, p.y - drag.p0.y) > 0.15) drag.moved = true;
-    // sample the path finely so a fast swipe cannot skip a snap point
-    var d = Math.hypot(p.x - drag.prev.x, p.y - drag.prev.y), n = Math.max(1, Math.ceil(d / 0.08));
-    for (var i = 1; i <= n; i++) {
-      stepTo({ x: drag.prev.x + (p.x - drag.prev.x) * i / n, y: drag.prev.y + (p.y - drag.prev.y) * i / n });
+    if (dist(p, drag.p0) > 0.12) drag.moved = true;
+    if (S.tool === 'eraser') {
+      if (eraseAt(p)) { drag.changed = true; recompute(); edited(); }
+    } else {
+      var q = clampPt(p), last = drag.raw[drag.raw.length - 1];
+      if (dist(q, last) > 0.04) drag.raw.push(q);
     }
-    drag.prev = p;
-    hover = ev.pointerType === 'mouse' ? nearestEdge(p, CAPTURE) : -1;
-    if (drag.changed) edited();
-    draw(); updateStatus();
+    draw();
   });
 
   function endDrag(ev) {
     if (!drag || drag.id !== ev.pointerId) return;
-    if (!drag.moved && S.tool === 'pen') {
-      // a tap on a line removes that piece
-      var k = segNear(drag.p0, 0.2);
-      if (k && !drag.changed) { S.segs.delete(k); drag.changed = true; }
+    if (S.tool === 'pen') {
+      if (!drag.moved && !drag.cont) {
+        // a tap on a line removes it (undo brings it back)
+        var L = lineNear(drag.p0, 0.22);
+        if (L) { S.lines.splice(S.lines.indexOf(L), 1); drag.changed = true; }
+      } else if (drag.raw.length > 1) {
+        var pts = processStroke(drag.raw);
+        var line;
+        if (drag.cont) {
+          line = drag.cont;
+          line.pts = line.pts.concat(pts.slice(1));
+        } else if (pathLength(pts) > 0.25) {
+          line = { lvl: S.active, pts: pts, closed: false };
+          S.lines.push(line);
+        }
+        if (line) { tidy(line); drag.changed = true; }
+      }
     }
-    if (drag.changed) { S.undo.push(drag.before); if (S.undo.length > 200) S.undo.shift(); edited(); }
+    if (drag.changed) {
+      S.undo.push(drag.before); if (S.undo.length > 200) S.undo.shift();
+      recompute(); edited();
+      if (S.crossings.length) flash('Isobaren dürfen sich nicht kreuzen');
+    }
     drag = null;
     draw(); updateStatus();
   }
   canvas.addEventListener('pointerup', endDrag);
   canvas.addEventListener('pointercancel', endDrag);
-  canvas.addEventListener('pointerleave', function () { if (!drag && hover >= 0) { hover = -1; draw(); } });
+  canvas.addEventListener('pointerleave', function () { if (!drag && hover) { hover = null; draw(); } });
 
   // ================================================================
   //  UI
@@ -1228,14 +1339,15 @@
     if (flashMsg) { txt = flashMsg; cls = 'warn'; }
     else if (S.locked && S.timeLeft <= 0 && mode().time) { txt = 'Zeit abgelaufen!'; cls = 'warn'; }
     else if (S.result) { txt = S.result.score >= 90 ? 'Stark! Das ist eine echte Wetterkarte.' : 'Rote Ringe: Stationen auf der falschen Seite'; cls = S.result.score >= 90 ? 'good' : ''; }
+    else if (S.crossings.length) { txt = 'Rotes ✕: Isobaren kreuzen sich nie'; cls = 'warn'; }
     else if (mode().id === 'tutorial') {
-      var X = S.active, open = openEnds().length, r = evaluate();
-      if (S.segs.size === 0) txt = 'Zieh die ' + X + '-hPa-Linie: blau (unter ' + X + ') von rot (über ' + X + ') trennen';
-      else if (open) txt = 'Führe die Linie bis zum Rand — oder schließe sie zum Ring';
-      else if (r.sep < 0.999) txt = 'Noch liegen blaue und rote Stationen auf derselben Seite';
+      var X = S.active;
+      if (!S.lines.length) txt = 'Zieh die ' + X + '-hPa-Linie: blau (unter ' + X + ') von rot (über ' + X + ') trennen';
+      else if (S.open.length) txt = 'Setz am offenen Ende an: bis zum Rand — oder zum Ring schließen';
+      else if (evaluate().sep < 0.999) txt = 'Noch liegen blaue und rote Stationen auf derselben Seite';
       else { txt = 'Perfekt getrennt! Tippe auf „Prüfen“'; cls = 'good'; }
-    } else if (S.segs.size === 0) {
-      txt = 'Wähle eine Isobare oben und zieh sie über das Feld';
+    } else if (!S.lines.length) {
+      txt = 'Wähle eine Isobare oben und zeichne sie frei ein';
     } else {
       txt = 'Zeichne ' + S.active + ' hPa — Stufen alle ' + INTERVAL + ' hPa';
     }
@@ -1245,14 +1357,13 @@
   }
 
   function updateStatus() {
-    var nSt = S.station.filter(Boolean).length;
-    $('ro-stations').textContent = nSt;
+    $('ro-stations').textContent = S.station.filter(Boolean).length;
     var drawn = new Set();
-    S.segs.forEach(function (s) { drawn.add(s.lvl); });
+    S.lines.forEach(function (L) { drawn.add(L.lvl); });
     $('ro-levels').textContent = S.levels.filter(function (X) { return drawn.has(X); }).length + ' / ' + S.levels.length;
-    var open = openEnds().length;
-    $('ro-open').textContent = open;
-    $('ro-open').className = open ? 'low' : '';
+    var bad = S.open.length + S.crossings.length;
+    $('ro-open').textContent = S.open.length + (S.crossings.length ? ' · ' + S.crossings.length + '✕' : '');
+    $('ro-open').className = bad ? 'low' : '';
     var t = $('ro-time');
     if (mode().time) {
       var m = Math.floor(Math.max(0, S.timeLeft) / 60), sec = Math.max(0, S.timeLeft) % 60;
@@ -1260,15 +1371,14 @@
       t.className = S.timeLeft <= 20 ? 'low' : '';
     } else { t.textContent = '∞'; t.className = ''; }
     $('btn-undo').disabled = !S.undo.length || S.locked;
-    $('tool-clear').disabled = !S.segs.size || S.locked;
+    $('tool-clear').disabled = !S.lines.length || S.locked;
     var hintBtn = $('tool-hint');
     hintBtn.classList.toggle('on', S.hintOn || mode().hint);
-    hintBtn.disabled = mode().hint;
+    hintBtn.disabled = mode().hint || S.locked;
     hintBtn.textContent = mode().hint ? 'Tipp (an)' : S.hintOn ? 'Tipp an' : 'Tipp (−10)';
     $('tool-pen').classList.toggle('on', S.tool === 'pen');
     $('tool-eraser').classList.toggle('on', S.tool === 'eraser');
-    ['tool-pen', 'tool-eraser', 'tool-hint'].forEach(function (id) { if (S.locked) $(id).disabled = true; });
-    if (!S.locked) { $('tool-pen').disabled = false; $('tool-eraser').disabled = false; }
+    $('tool-pen').disabled = S.locked; $('tool-eraser').disabled = S.locked;
     updateBadge();
   }
 
@@ -1298,11 +1408,11 @@
   function newMap(reseed) {
     if (reseed) S.seed = hash32(S.seed, Date.now() & 0x7fffffff);
     generate();
-    S.segs = new Map(); S.undo = []; S.result = null; S.showRef = false;
+    S.lines = []; S.undo = []; S.result = null; S.showRef = false;
     S.hintOn = false; S.hintUsed = false; S.locked = false; S.tool = 'pen';
     S.active = S.levels[Math.floor((S.levels.length - 1) / 2)];
+    recompute();
     $('result').hidden = true;
-    $('btn-check').disabled = false;
     layout();
     renderModes(); renderPreset(); renderLevels();
     startTimer();
@@ -1318,12 +1428,13 @@
 
     $('res-score').textContent = r.score;
     $('res-stars').textContent = r.score >= 90 ? '★★★' : r.score >= 70 ? '★★☆' : r.score >= 40 ? '★☆☆' : '☆☆☆';
-    $('res-verdict').textContent = r.score >= 90 ? 'Wetterdienst-reif' : r.score >= 70 ? 'Gute Analyse' : r.score >= 40 ? 'Auf dem Weg' : 'Nochmal hinschauen';
+    $('res-verdict').textContent = r.crossings.length ? 'Ungültig: Kreuzung' : r.score >= 90 ? 'Wetterdienst-reif' : r.score >= 70 ? 'Gute Analyse' : r.score >= 40 ? 'Auf dem Weg' : 'Nochmal hinschauen';
     [['sep', r.sep], ['ref', r.ref], ['smooth', r.smooth]].forEach(function (x) {
       $('res-' + x[0]).textContent = Math.round(x[1] * 100) + ' %';
       $('bar-' + x[0]).style.width = Math.round(x[1] * 100) + '%';
     });
     var pen = [];
+    if (r.crossings.length) pen.push(r.crossings.length + ' Kreuzung' + (r.crossings.length === 1 ? '' : 'en') + ': −' + 15 * r.crossings.length);
     if (r.open.length) pen.push(r.open.length + ' offene' + (r.open.length === 1 ? 's Ende' : ' Enden') + ': −' + 10 * r.open.length);
     if (S.hintUsed && !m.hint) pen.push('Tipp benutzt: −10');
     if (timeUp) pen.push('Zeit abgelaufen');
@@ -1348,13 +1459,13 @@
     $('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  $('btn-check').addEventListener('click', function () { if (!S.locked || !S.result) runCheck(false); });
+  $('btn-check').addEventListener('click', function () { if (!S.locked) runCheck(false); });
   $('btn-undo').addEventListener('click', function () {
     if (!S.undo.length || S.locked) return;
     restore(S.undo.pop()); edited(); updateStatus(); draw();
   });
   $('btn-new').addEventListener('click', function () { newMap(true); });
-  $('tool-pen').addEventListener('click', function () { S.tool = 'pen'; updateStatus(); draw(); });
+  $('tool-pen').addEventListener('click', function () { S.tool = 'pen'; hover = null; updateStatus(); draw(); });
   $('tool-eraser').addEventListener('click', function () { S.tool = 'eraser'; updateStatus(); draw(); });
   $('tool-hint').addEventListener('click', function () {
     if (mode().hint) return;
@@ -1363,8 +1474,8 @@
     updateStatus(); draw();
   });
   $('tool-clear').addEventListener('click', function () {
-    if (!S.segs.size || S.locked) return;
-    S.undo.push(snapshot()); S.segs = new Map(); edited(); updateStatus(); draw();
+    if (!S.lines.length || S.locked) return;
+    S.undo.push(snapshot()); S.lines = []; recompute(); edited(); updateStatus(); draw();
   });
   $('btn-ref').addEventListener('click', function () {
     S.showRef = !S.showRef;
@@ -1374,7 +1485,7 @@
   });
   $('btn-retry').addEventListener('click', function () {
     if (S.locked) { newMap(true); return; }
-    edited(); renderLevels(); updateStatus(); draw();
+    edited(); updateStatus(); draw();
     stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
   $('preset-prev').addEventListener('click', function () { S.preset = (S.preset + PRESETS.length - 1) % PRESETS.length; newMap(false); });
@@ -1406,20 +1517,18 @@
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { draw(); });
 
-  // Hook for automated checks: fills the board with the snapped reference.
+  // Hook for automated checks: fills the board with the reference isobars.
   window.__isodraw = {
     state: S,
     solve: function () {
-      S.segs = new Map();
-      S.levels.forEach(function (X) {
-        referenceEdges(X).segs.forEach(function (sg) { addSeg(sg[0], sg[1], X, sg[2]); });
-      });
-      edited(); updateStatus(); draw();
+      S.lines = [];
+      S.levels.forEach(function (X) { S.lines = S.lines.concat(referenceLines(X)); });
+      recompute(); edited(); updateStatus(); draw();
     },
-    evaluate: evaluate, canAdd: canAdd
+    evaluate: evaluate, recompute: recompute
   };
 
-  S.seed = (Date.now() >>> 0);
+  S.seed = Date.now() >>> 0;
   newMap(false);
 })();
 </script>
