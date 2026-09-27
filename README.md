@@ -39,11 +39,16 @@ There is no single correct drawing, so the game scores structure, not pixels.
   through such a line, labels the regions; every below/above pair sharing a
   region costs. A line that stops short leaves a gap the fill runs around,
   so it separates nothing. Stations on the wrong side get a red ring.
-- **Nähe zur Referenz (25 points).** Distance between the player's lines
-  and the interpolated reference, measured both ways (points along the
-  player's lines to the reference, and points along the reference to the
-  player's lines), counting fully at 0 and not at all beyond 0.8 cells;
-  combined as an F1 score and weighted by reference length.
+- **Interpolation (25 points).** Uses only what the player can see. For
+  each level, every station is paired with its (up to three) nearest
+  stations on the other side of that level within 2.3 cells; linear
+  interpolation along each pair gives a support point where the isobar
+  should pass — between 1006 and 1010 the 1008 line belongs exactly in the
+  middle. The score is how close the player's line of that level comes to
+  each point: full marks within 0.25 cells, nothing beyond 0.9, closer
+  pairs weighing more. Points that land within 0.2 cells of each other are
+  merged. After checking, the points are shown as diamonds: green where the
+  line passes within about 0.4 cells, red where it misses.
 - **Glattheit (15 points).** The turning angle along every line, sampled
   every 0.2 cells: gentle bends up to 20° are free, sharper kinks cost more
   and more up to 70°.
@@ -52,10 +57,14 @@ There is no single correct drawing, so the game scores structure, not pixels.
   isobar never ends in the middle of the field: every loose end costs 10. The **Tipp**, which colours stations blue/red relative
   to the selected level, costs 10 outside the tutorial.
 
-After checking, **Referenz einblenden** overlays the computer's isobars —
-marching squares with linear interpolation on the complete hidden field —
-and shows the hidden grid values, so the player can see *why* their drawing
-differs.
+The top verdict and three stars need a structurally correct map: every
+level drawn, every station on the right side, no loose ends, no crossings.
+
+After checking, **Wahres Feld** overlays the isobars of the complete hidden
+field (marching squares with linear interpolation on every grid point) and
+shows the hidden values. It does not count towards the score: the player
+cannot know those values, so it is there to show what was really going on
+between the stations — the same gap every sparse observing network has.
 
 ## Modes
 
@@ -64,7 +73,7 @@ differs.
 | Tutorial | 5×5 grid, 6 stations, one isobar, stations always coloured, step-by-step prompts |
 | Klassisch | 7×7 grid, 16–20 stations, 2–4 isobars, no help |
 | Sturm | 9×9 grid, a deep low with tightly packed rings — often two isobars between neighbouring grid points — 4–6 isobars, 2 minutes |
-| Wetterlagen | Idealised Central European patterns: Westwetterlage, Hoch über Mitteleuropa, Sturmtief über der Nordsee, Omega-Lage, Trog |
+| Wetterlagen | 9×9 grid, 26–30 stations, idealised Central European patterns: Westwetterlage, Hoch über Mitteleuropa, Sturmtief über der Nordsee, Omega-Lage, Trog |
 
 The Wetterlagen are idealised pressure fields built to look like those
 patterns, not real historical analyses; loading actual station data (for
@@ -95,7 +104,7 @@ count, so a new map is always produced). Best scores per mode are kept in
   layout), mobile-first and optimised for touch, with a desktop view that is
   auto-detected and can be toggled by hand.
 - `window.__isodraw` exposes the state, the evaluator and `solve()` (fills
-  the board with the reference isobars) for automated checks.
+  the board with the true-field isobars) for automated checks.
 
 Deployed like the other SCAPE° exhibits: GitHub Pages serving the `main`
 branch root. Open `index.html` directly, or serve the folder with any static

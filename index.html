@@ -412,9 +412,9 @@
           <div class="crit-note">Wie viele Stationspaare (eins unter, eins &uuml;ber der Isobare) deine Linien korrekt trennen. 60 Punkte.</div>
         </div>
         <div class="crit">
-          <div class="crit-top"><span>N&auml;he zur Referenz</span><span id="res-ref">0 %</span></div>
-          <div class="crit-bar"><i id="bar-ref"></i></div>
-          <div class="crit-note">Wie nah deine Linien an der interpolierten Referenz liegen, in beide Richtungen gemessen &mdash; ab 0,8 K&auml;stchen Abstand z&auml;hlt es nicht mehr. 25 Punkte.</div>
+          <div class="crit-top"><span>Interpolation</span><span id="res-int">0 %</span></div>
+          <div class="crit-bar"><i id="bar-int"></i></div>
+          <div class="crit-note">Zwischen je zwei benachbarten Stationen &mdash; eine unter, eine &uuml;ber der Stufe &mdash; liegt ein St&uuml;tzpunkt, linear interpoliert: Zwischen 1006 und 1010 geh&ouml;rt die 1008 genau in die Mitte. Wie nah l&auml;uft deine Linie daran vorbei? 25 Punkte.</div>
         </div>
         <div class="crit">
           <div class="crit-top"><span>Glattheit</span><span id="res-smooth">0 %</span></div>
@@ -424,7 +424,8 @@
         <div class="penalties" id="res-pen"></div>
         <ul class="level-report" id="res-levels"></ul>
         <div class="result-actions">
-          <button type="button" id="btn-ref">Referenz einblenden</button>
+          <button type="button" id="btn-pts">St&uuml;tzpunkte</button>
+          <button type="button" id="btn-ref">Wahres Feld</button>
           <button type="button" id="btn-retry">Weiterzeichnen</button>
         </div>
       </div>
@@ -446,14 +447,15 @@
         <div class="topic-body">
           <p class="blurb">Es gibt keine einzig richtige L&ouml;sung. Das Spiel pr&uuml;ft deine Linien <b>strukturell</b>: Liegt f&uuml;r jede Isobare jede Station auf der richtigen Seite? F&uuml;r jede Druckstufe werden alle Paare aus einer Station darunter und einer dar&uuml;ber gebildet &mdash; jedes Paar, das deine Linien nicht trennen, kostet.</p>
           <p class="blurb">Harte Regeln: Isobaren kreuzen sich nie &mdash; jede Kreuzung wird rot markiert und kostet 15 Punkte. Und sie enden nie mitten im Feld: Ein offenes Ende trennt nichts, weil der Druck um das Ende herum &bdquo;flie&szlig;en&ldquo; kann, und kostet zus&auml;tzlich 10 Punkte. Der Tipp kostet ebenfalls 10.</p>
-          <p class="blurb">Dazu kommen zwei Bonus-Kriterien: <b>Glattheit</b> (wenige harte Ecken) und <b>N&auml;he zur Referenz</b>. Die Referenz kennt auch die Werte an den Gitterpunkten ohne Station &mdash; die siehst du erst nach dem Pr&uuml;fen.</p>
+          <p class="blurb">Dazu kommen zwei Bonus-Kriterien: <b>Interpolation</b> (l&auml;uft die Linie dort, wo man zwischen benachbarten Stationen linear interpolieren w&uuml;rde?) und <b>Glattheit</b> (wenige harte Knicke). Beide beruhen nur auf dem, was du auf der Karte siehst.</p>
         </div>
       </details>
       <details class="topic">
-        <summary>Woher kommt die Referenz?</summary>
+        <summary>Interpolation und wahres Feld</summary>
         <div class="topic-body">
-          <p class="blurb">Hinter jeder Karte steckt ein vollst&auml;ndiges Druckfeld auf allen Gitterpunkten. Die Referenz-Isobaren werden daraus mit <b>Marching Squares</b> berechnet: F&uuml;r jedes K&auml;stchen wird gepr&uuml;ft, an welchen Kanten der Druck die Stufe &uuml;ber- oder unterschreitet, und dort wird linear interpoliert.</p>
-          <p class="blurb">Deine Linien zeichnest du frei. Bewertet wird trotzdem nicht Pixel f&uuml;r Pixel: F&uuml;r jede Druckstufe werden deine Linien in ein feines Raster &uuml;bertragen, und eine F&uuml;llung pr&uuml;ft, welche Stationen im selben Gebiet landen. Die Referenz z&auml;hlt nur als Bonus &mdash; wer anders, aber korrekt trennt, verliert kaum etwas.</p>
+          <p class="blurb">Wo genau eine Isobare zwischen zwei Stationen verl&auml;uft, kannst du nur sch&auml;tzen. Die einfachste und ehrlichste Sch&auml;tzung ist <b>lineare Interpolation</b>: Liegt eine Station bei 1006&nbsp;hPa und ihre Nachbarin bei 1010&nbsp;hPa, geh&ouml;rt die 1008er-Linie genau in die Mitte; bei 1007 und 1011 ein Viertel weiter von der 1007 weg. Genau das bewertet das Kriterium &bdquo;Interpolation&ldquo; &mdash; nur mit den Zahlen, die du auch siehst.</p>
+          <p class="blurb">Deine Linien zeichnest du frei. F&uuml;r die Trennung werden sie in ein feines Raster &uuml;bertragen, und eine F&uuml;llung pr&uuml;ft, welche Stationen im selben Gebiet landen &mdash; bewertet wird also nicht Pixel f&uuml;r Pixel, sondern die Seite, auf der jede Station liegt.</p>
+          <p class="blurb">Hinter jeder Karte steckt au&szlig;erdem ein vollst&auml;ndiges Druckfeld auf allen Gitterpunkten. Nach dem Pr&uuml;fen zeigt &bdquo;Wahres Feld&ldquo; die Isobaren, die sich daraus ergeben (Marching Squares). Sie z&auml;hlen nicht zur Punktzahl &mdash; sie zeigen nur, was zwischen den Stationen wirklich los war. So geht es Meteorologen auch: Die Messnetze sind l&uuml;ckenhaft.</p>
         </div>
       </details>
       <details class="topic">
@@ -499,7 +501,7 @@
     { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], maxCross: 1, hint: true, time: 0 },
     { id: 'classic',  name: 'Klassisch', W: 7, H: 7, stations: [16, 20], levels: [2, 4], grad: [0.5, 0.85], maxCross: 1, hint: false, time: 0 },
     { id: 'storm',    name: 'Sturm', W: 9, H: 9, stations: [26, 30], levels: [4, 6], grad: [1.2, 1.6], maxCross: 2, hint: false, time: 120 },
-    { id: 'synoptic', name: 'Wetter­lagen', W: 9, H: 7, stations: [22, 26], levels: [3, 6], grad: [0.6, 0.9], maxCross: 1, hint: false, time: 0 }
+    { id: 'synoptic', name: 'Wetter­lagen', W: 9, H: 9, stations: [26, 30], levels: [3, 6], grad: [0.6, 0.9], maxCross: 1, hint: false, time: 0 }
   ];
 
   // Idealised large-scale weather patterns over Central Europe. Positions
@@ -555,7 +557,7 @@
     lines: [],           // {lvl, pts:[{x,y}], closed}
     crossings: [], open: [],
     active: 0, tool: 'pen',
-    undo: [], result: null, showRef: false, hintOn: false, hintUsed: false,
+    undo: [], result: null, showRef: false, showPts: false, hintOn: false, hintUsed: false,
     timeLeft: 0, locked: false, timerId: null
   };
 
@@ -942,11 +944,49 @@
     return out;
   }
 
-  function closeness(d) { return Math.max(0, 1 - d / 0.8); }
+  // full marks within a quarter cell, nothing beyond 0.9 cells
+  function closeness(d) { return Math.max(0, Math.min(1, 1 - (d - 0.25) / 0.65)); }
+
+  // Where linear interpolation between two neighbouring stations, one below
+  // and one above X, puts the X isobar. Each station is paired with its
+  // nearest partners on the other side; close pairs pin the line down more
+  // firmly than distant ones and weigh more.
+  function interpTargets(X) {
+    var lo = [], hi = [], n;
+    for (n = 0; n < S.vals.length; n++) if (S.station[n]) {
+      var st = { n: n, x: n % S.W, y: Math.floor(n / S.W), v: S.vals[n] };
+      (st.v < X ? lo : hi).push(st);
+    }
+    var pairs = new Map();
+    function link(from, others, radius) {
+      from.forEach(function (a) {
+        others.map(function (b) { return { b: b, d: dist(a, b) }; })
+          .filter(function (o) { return o.d <= radius; })
+          .sort(function (u, v) { return u.d - v.d; })
+          .slice(0, 3)
+          .forEach(function (o) {
+            var l = a.v < X ? a : o.b, h = a.v < X ? o.b : a;
+            pairs.set(l.n + '_' + h.n, { l: l, h: h, d: o.d });
+          });
+      });
+    }
+    link(lo, hi, 2.3); link(hi, lo, 2.3);
+    if (pairs.size < 2) { link(lo, hi, 4); link(hi, lo, 4); }
+    var out = [];
+    pairs.forEach(function (pr) {
+      var t = (X - pr.l.v) / (pr.h.v - pr.l.v);
+      var q = { x: pr.l.x + (pr.h.x - pr.l.x) * t, y: pr.l.y + (pr.h.y - pr.l.y) * t, w: 1 / pr.d };
+      // points from overlapping pairs that land together count as one, weights summed
+      var twin = out.filter(function (o) { return dist(o, q) < 0.2; })[0];
+      if (twin) { twin.x = (twin.x * twin.w + q.x * q.w) / (twin.w + q.w); twin.y = (twin.y * twin.w + q.y * q.w) / (twin.w + q.w); twin.w += q.w; }
+      else out.push(q);
+    });
+    return out;
+  }
 
   function evaluate() {
-    var N = S.vals.length, res = { levels: [], wrong: new Set(), open: S.open.slice(), crossings: S.crossings.slice() };
-    var pairsTot = 0, pairsSep = 0, refW = 0, refAcc = 0;
+    var N = S.vals.length, res = { levels: [], targets: [], wrong: new Set(), open: S.open.slice(), crossings: S.crossings.slice() };
+    var pairsTot = 0, pairsSep = 0, intW = 0, intAcc = 0;
     S.levels.forEach(function (X) {
       var region = regionLabels(X), comp = {}, below = 0, above = 0, i;
       for (i = 0; i < N; i++) if (S.station[i]) {
@@ -968,33 +1008,21 @@
       var tot = below * above;
       pairsTot += tot; pairsSep += tot - bad;
 
-      // closeness to the reference, both ways round
+      // interpolation: does the line pass where linear interpolation
+      // between neighbouring stations puts it? Visible data only.
       var mine = S.lines.filter(function (L) { return L.lvl === X; });
-      var ref = referenceSegs(X), refLen = 0;
-      ref.forEach(function (sg) { refLen += dist(sg[0], sg[1]); });
-      var prec = 0, rec = 0, np = 0, nr = 0;
-      mine.forEach(function (L) {
-        resample(L.pts, 0.15).forEach(function (p) {
-          var d = Infinity;
-          ref.forEach(function (sg) { d = Math.min(d, distPtSeg(p, sg[0], sg[1])); });
-          prec += closeness(d); np++;
-        });
+      interpTargets(X).forEach(function (t) {
+        var d = Infinity;
+        mine.forEach(function (L) { d = Math.min(d, distPtLine(t, L.pts)); });
+        var c = closeness(d);
+        intW += t.w; intAcc += t.w * c;
+        res.targets.push({ x: t.x, y: t.y, lvl: X, hit: c >= 0.75 });
       });
-      ref.forEach(function (sg) {
-        resample([sg[0], sg[1]], 0.15).forEach(function (p) {
-          var d = Infinity;
-          mine.forEach(function (L) { d = Math.min(d, distPtLine(p, L.pts)); });
-          rec += closeness(d); nr++;
-        });
-      });
-      prec = np ? prec / np : 0; rec = nr ? rec / nr : 0;
-      var f1 = prec + rec > 0 ? 2 * prec * rec / (prec + rec) : 0;
-      refW += refLen; refAcc += f1 * refLen;
 
       res.levels.push({ X: X, drawn: mine.length > 0, sep: tot ? 1 - bad / tot : 1, wrong: wrongHere.length, below: below, above: above });
     });
     res.sep = pairsTot ? pairsSep / pairsTot : 0;
-    res.ref = refW ? refAcc / refW : 0;
+    res.interp = intW ? intAcc / intW : 0;
 
     // smoothness: turning angle along every line, sampled every 0.2 cells;
     // gentle bends are free, sharp kinks cost
@@ -1012,11 +1040,14 @@
     });
     res.smooth = S.lines.length === 0 ? 0 : nTurn ? 1 - pen / nTurn : 1;
 
-    var pts = 60 * res.sep + 25 * res.ref + 15 * res.smooth;
+    var pts = 60 * res.sep + 25 * res.interp + 15 * res.smooth;
     pts -= 10 * res.open.length + 15 * res.crossings.length;
     if (S.hintUsed && !mode().hint) pts -= 10;
     if (S.lines.length === 0) pts = 0;
     res.score = Math.max(0, Math.round(pts));
+    // the top tier needs a structurally correct map
+    res.valid = res.wrong.size === 0 && res.open.length === 0 && res.crossings.length === 0 &&
+      S.levels.every(function (X) { return S.lines.some(function (L) { return L.lvl === X; }); });
     return res;
   }
 
@@ -1160,6 +1191,16 @@
       }
     }
 
+    // interpolation targets after checking: green where the line passes, red where it misses
+    if (S.showPts && S.result) {
+      S.result.targets.forEach(function (t) {
+        var x = px(t.x), y = py(t.y), r = Math.max(3.5, s * 0.08);
+        ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
+        ctx.fillStyle = t.hit ? '#00954f' : '#df2a1e'; ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+      });
+    }
+
     // one label per line, halfway along it
     if (!drag) {
       S.lines.forEach(function (L) {
@@ -1206,7 +1247,7 @@
   }
 
   function edited() {
-    if (S.result) { S.result = null; S.showRef = false; document.getElementById('result').hidden = true; renderLevels(); }
+    if (S.result) { S.result = null; S.showRef = false; S.showPts = false; document.getElementById('result').hidden = true; renderLevels(); }
   }
 
   function eraseAt(p) {
@@ -1338,7 +1379,7 @@
     var txt = '', cls = '';
     if (flashMsg) { txt = flashMsg; cls = 'warn'; }
     else if (S.locked && S.timeLeft <= 0 && mode().time) { txt = 'Zeit abgelaufen!'; cls = 'warn'; }
-    else if (S.result) { txt = S.result.score >= 90 ? 'Stark! Das ist eine echte Wetterkarte.' : 'Rote Ringe: Stationen auf der falschen Seite'; cls = S.result.score >= 90 ? 'good' : ''; }
+    else if (S.result) { txt = S.result.valid && S.result.score >= 90 ? 'Stark! Das ist eine echte Wetterkarte.' : S.result.wrong.size ? 'Rote Ringe: Stationen auf der falschen Seite' : 'Rauten: gr\u00fcn getroffen, rot verfehlt'; cls = S.result.valid && S.result.score >= 90 ? 'good' : ''; }
     else if (S.crossings.length) { txt = 'Rotes ✕: Isobaren kreuzen sich nie'; cls = 'warn'; }
     else if (mode().id === 'tutorial') {
       var X = S.active;
@@ -1408,7 +1449,7 @@
   function newMap(reseed) {
     if (reseed) S.seed = hash32(S.seed, Date.now() & 0x7fffffff);
     generate();
-    S.lines = []; S.undo = []; S.result = null; S.showRef = false;
+    S.lines = []; S.undo = []; S.result = null; S.showRef = false; S.showPts = false;
     S.hintOn = false; S.hintUsed = false; S.locked = false; S.tool = 'pen';
     S.active = S.levels[Math.floor((S.levels.length - 1) / 2)];
     recompute();
@@ -1427,9 +1468,12 @@
     if (best === null || r.score > best) { setBest(m, r.score); renderModes(); }
 
     $('res-score').textContent = r.score;
-    $('res-stars').textContent = r.score >= 90 ? '★★★' : r.score >= 70 ? '★★☆' : r.score >= 40 ? '★☆☆' : '☆☆☆';
-    $('res-verdict').textContent = r.crossings.length ? 'Ungültig: Kreuzung' : r.score >= 90 ? 'Wetterdienst-reif' : r.score >= 70 ? 'Gute Analyse' : r.score >= 40 ? 'Auf dem Weg' : 'Nochmal hinschauen';
-    [['sep', r.sep], ['ref', r.ref], ['smooth', r.smooth]].forEach(function (x) {
+    var tier = r.valid && r.score >= 90 ? 3 : r.score >= 70 ? 2 : r.score >= 40 ? 1 : 0;
+    $('res-stars').textContent = ['\u2606\u2606\u2606', '\u2605\u2606\u2606', '\u2605\u2605\u2606', '\u2605\u2605\u2605'][tier];
+    $('res-verdict').textContent = r.crossings.length ? 'Ung\u00fcltig: Kreuzung' : tier === 3 ? 'Wetterdienst-reif' :
+      r.score >= 70 && r.wrong.size ? 'Fast \u2014 ' + r.wrong.size + ' Station' + (r.wrong.size === 1 ? '' : 'en') + ' falsch' :
+      r.score >= 70 ? 'Gute Analyse' : r.score >= 40 ? 'Auf dem Weg' : 'Nochmal hinschauen';
+    [['sep', r.sep], ['int', r.interp], ['smooth', r.smooth]].forEach(function (x) {
       $('res-' + x[0]).textContent = Math.round(x[1] * 100) + ' %';
       $('bar-' + x[0]).style.width = Math.round(x[1] * 100) + '%';
     });
@@ -1452,7 +1496,7 @@
       li.appendChild(lv); li.appendChild(tx); ul.appendChild(li);
     });
     $('btn-ref').classList.remove('on');
-    $('btn-ref').textContent = 'Referenz einblenden';
+    S.showPts = true; $('btn-pts').classList.add('on');
     $('btn-retry').textContent = S.locked ? 'Neue Karte' : 'Weiterzeichnen';
     $('result').hidden = false;
     renderLevels(); updateStatus(); draw();
@@ -1480,7 +1524,11 @@
   $('btn-ref').addEventListener('click', function () {
     S.showRef = !S.showRef;
     this.classList.toggle('on', S.showRef);
-    this.textContent = S.showRef ? 'Referenz ausblenden' : 'Referenz einblenden';
+    draw();
+  });
+  $('btn-pts').addEventListener('click', function () {
+    S.showPts = !S.showPts;
+    this.classList.toggle('on', S.showPts);
     draw();
   });
   $('btn-retry').addEventListener('click', function () {
