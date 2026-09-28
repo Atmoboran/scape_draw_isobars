@@ -11,9 +11,10 @@ contour interpolation, not painting by numbers.
 
 - The field is a lattice of grid points. Some are stations (their value is
   shown), the rest are hidden and only revealed after checking.
-- Isobars are drawn at a fixed interval of 4 hPa; the chips above the board
-  list exactly the levels that must exist for this map (every multiple of
-  4 hPa between the lowest and the highest station), each with its own fixed
+- Isobars are drawn at a fixed interval — 4 hPa, and 5 hPa on the Europe
+  map as on DWD surface charts; the chips above the board list exactly the
+  levels that must exist for this map (every multiple of the interval
+  between the lowest and the highest station), each with its own fixed
   colour, so 1008 looks the same on every map.
 - Drawing is freehand, with finger or mouse. When the finger lifts, the
   stroke is simplified (Ramer–Douglas–Peucker) and rounded off (Chaikin
@@ -73,16 +74,44 @@ between the stations — the same gap every sparse observing network has.
 | Tutorial | 5×5 grid, 6 stations, one isobar, stations always coloured, step-by-step prompts |
 | Klassisch | 7×7 grid, 16–20 stations, 2–4 isobars, no help |
 | Sturm | 9×9 grid, a deep low with tightly packed rings — often two isobars between neighbouring grid points — 4–6 isobars, 2 minutes |
-| Wetterlagen | 9×9 grid, 26–30 stations, idealised Central European patterns: Westwetterlage, Hoch über Mitteleuropa, Sturmtief über der Nordsee, Omega-Lage, Trog |
+| Wetterlagen | All of Europe with coastlines, 13×11 grid, 40–48 stations, eight Großwetterlagen |
 
-The Wetterlagen are idealised pressure fields built to look like those
-patterns, not real historical analyses; loading actual station data (for
-example from the DWD) for well-known storms is the natural next step.
+### Wetterlagen: the whole of Europe
+
+The Wetterlagen mode shows each pattern over the whole continent rather
+than a cut-out, so it can be recognised the way it appears on a real
+weather chart. The board spans 26°W–40°E and 35–70°N on a 13×11 grid —
+5.5° of longitude by 3.5° of latitude, about 390 km each way at 50°N —
+drawn over a coastline (Natural Earth 1:50m land, clipped to the board,
+simplified and embedded as about 12 KB of tenth-degree coordinates) with a
+few cities for orientation. Stations sit mostly on land (weighted four to
+one over sea points, the rest standing in for ships and buoys), and never
+two side by side, so their labels stay readable on a phone.
+
+The eight Großwetterlagen, named and abbreviated after Hess/Brezowsky:
+Westlage (WZ), Hoch Mitteleuropa (HM), Trog Mitteleuropa (TrM), Omega-Lage,
+Nordwestlage (NWz), Hoch Fennoskandien (HFa), Südwestlage (SWz) and a
+Sturmtief über der Nordsee. Each is built from its pressure systems in real
+hPa on 1013 — Islandtief, Azorenhoch, Russlandhoch, the trough reaching
+from Scandinavia to the Mediterranean — placed by longitude and latitude,
+with sizes in kilometres and optional rotation, so for example the TrM
+trough runs between an Atlantic ridge and a Russian high just like on a
+500 hPa chart. Every map jitters positions (±1.5° lon, ±1° lat), strengths
+(±10 %) and sizes (±8 %) and adds a faint long wave, so no two are the
+same while the pattern stays unmistakable. The values are not rescaled, so
+pressures run from the low 980s to the upper 1030s and a map has six to
+nine isobars. After checking, **Wahres Feld** draws every isobar of the
+hidden field — not only the ones the stations call for — and marks its
+highs and lows with H and T, so the whole Großwetterlage appears.
+
+These are idealised fields, not historical analyses; loading real station
+data (for example from the DWD) for well-known situations is the natural
+next step.
 
 ## Map generation
 
-Each map is a sum of Gaussian highs and lows plus a background gradient,
-rescaled so the steepest step between neighbouring grid points is a set
+Outside the Europe mode, each map is a sum of Gaussian highs and lows plus a
+background gradient, rescaled so the steepest step between neighbouring grid points is a set
 fraction of the 4 hPa interval — below one interval in most modes, up to
 1.6 intervals in Sturm, which is what packs its rings so tightly. Every
 value is kept at least 0.6 hPa from a level, so the rounded number on

@@ -437,7 +437,7 @@
       <details class="topic">
         <summary>Was ist eine Isobare?</summary>
         <div class="topic-body">
-          <p class="blurb">Eine Isobare verbindet Orte mit gleichem Luftdruck &mdash; so wie eine H&ouml;henlinie auf der Wanderkarte Orte gleicher H&ouml;he verbindet. Auf Wetterkarten werden sie in festen Abst&auml;nden gezeichnet, hier alle 4&nbsp;hPa.</p>
+          <p class="blurb">Eine Isobare verbindet Orte mit gleichem Luftdruck &mdash; so wie eine H&ouml;henlinie auf der Wanderkarte Orte gleicher H&ouml;he verbindet. Auf Wetterkarten werden sie in festen Abst&auml;nden gezeichnet, hier alle 4&nbsp;hPa, auf der Europakarte wie beim Deutschen Wetterdienst alle 5&nbsp;hPa.</p>
           <p class="blurb">Wichtig: Eine Isobare liegt <i>zwischen</i> den Messwerten. Zwischen einer Station mit 1006&nbsp;hPa und einer mit 1010&nbsp;hPa muss die 1008er-Linie irgendwo hindurch. Wo genau, ist eine Sch&auml;tzung &mdash; das nennt man Interpolation.</p>
           <p class="blurb">Wo Isobaren eng beieinander liegen, &auml;ndert sich der Druck schnell &mdash; dort weht starker Wind. Geschlossene Ringe um niedrige Werte sind Tiefs (T), um hohe Werte Hochs (H).</p>
         </div>
@@ -464,7 +464,7 @@
           <p class="blurb"><b>Tutorial:</b> wenige Stationen, eine einzige Isobare, und die Stationen sind nach &bdquo;darunter&ldquo; (blau) und &bdquo;dar&uuml;ber&ldquo; (rot) eingef&auml;rbt.</p>
           <p class="blurb"><b>Klassisch:</b> 16&ndash;20 Stationen, mehrere Isobaren, keine Hilfen.</p>
           <p class="blurb"><b>Sturm:</b> ein kr&auml;ftiges Tief mit eng liegenden Isobaren &mdash; oft zwei zwischen benachbarten Stationen &mdash; und nur zwei Minuten Zeit.</p>
-          <p class="blurb"><b>Wetterlagen:</b> typische Gro&szlig;wetterlagen Mitteleuropas als idealisierte Druckfelder, von der Westwetterlage bis zum Omega-Hoch.</p>
+          <p class="blurb"><b>Wetterlagen:</b> ganz Europa mit K&uuml;sten, feinerem Gitter und echten hPa-Werten &mdash; acht Gro&szlig;wetterlagen von der Westlage &uuml;ber den Trog Mitteleuropa bis zur Omega-Lage. Isobaren wie beim Deutschen Wetterdienst alle 5&nbsp;hPa. Nach dem Pr&uuml;fen zeigt &bdquo;Wahres Feld&ldquo; die ganze Lage mit Hochs (H) und Tiefs (T).</p>
         </div>
       </details>
     </div>
@@ -492,7 +492,6 @@
   //  separates nothing.
   // ================================================================
 
-  var INTERVAL = 4;
   var PAD = 0.62;          // board margin, in cells
   var RASTER = 16;         // raster pixels per cell for the region test
   var SNAP = 0.4;          // how close an end must be to the rim / a loose end to snap, in cells
@@ -501,34 +500,81 @@
     { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], maxCross: 1, hint: true, time: 0 },
     { id: 'classic',  name: 'Klassisch', W: 7, H: 7, stations: [16, 20], levels: [2, 4], grad: [0.5, 0.85], maxCross: 1, hint: false, time: 0 },
     { id: 'storm',    name: 'Sturm', W: 9, H: 9, stations: [26, 30], levels: [4, 6], grad: [1.2, 1.6], maxCross: 2, hint: false, time: 120 },
-    { id: 'synoptic', name: 'Wetter­lagen', W: 9, H: 9, stations: [26, 30], levels: [3, 6], grad: [0.6, 0.9], maxCross: 1, hint: false, time: 0 }
+    { id: 'synoptic', name: 'Wetter­lagen', W: 13, H: 11, stations: [40, 48], levels: [3, 9], maxCross: 3, hint: false, time: 0, interval: 5, europe: true }
   ];
+  function ivl() { return mode().interval || 4; }
 
-  // Idealised large-scale weather patterns over Central Europe. Positions
-  // are in board units (0..1, north at the top); amp in arbitrary units,
-  // the whole field is rescaled afterwards.
+  // ---------- Europe ----------
+  // The Wetterlagen board covers 26°W-40°E, 35-70°N: 13 x 11 grid points,
+  // 5.5° of longitude by 3.5° of latitude, which is about 390 km each way
+  // at 50°N. Coastline: Natural Earth 1:50m land, clipped and simplified,
+  // stored as tenths of a degree (lon,lat,lon,lat,...), one polygon per '|'.
+  var EU = { lon0: -26, dlon: 5.5, lat0: 70, dlat: 3.5 };
+  var COAST = '226,586,233,585,224,582,220,579,222,582,219,583,220,584,219,585|239,355,242,356,241,355,243,354,257,353,258,351,263,353,262,350,248,349,245,352,236,353,236,355,237,357|234,390,235,388,241,386,243,382,246,381,246,380,244,380,240,384,237,384,233,388,229,389,233,390|345,356,339,353,341,350,337,350,330,346,324,347,323,350,323,351,329,352,329,354,336,354,346,357|191,578,188,577,188,575,189,574,181,569,183,571,181,573,181,576,185,578,189,579|126,558,122,555,124,553,121,552,121,548,119,548,117,552,113,552,110,557,113,558,116,560,117,557,118,557,119,560,122,561,126,561|106,556,108,553,108,551,106,551,100,552,99,554,99,555|31,398,35,397,31,393,27,395,25,395,24,396,32,400|96,409,98,405,96,403,97,400,96,392,91,392,90,390,86,389,84,392,85,398,84,399,85,403,82,407,82,409,87,409,92,413,96,410|95,428,96,422,92,414,88,416,89,417,86,419,87,421,86,424,88,426,93,427,94,430|156,382,151,375,153,371,151,367,145,368,141,371,126,376,124,378,127,382,129,380,134,382,138,380,155,383|-31,585,-32,583,-40,580,-40,579,-39,578,-41,576,-34,577,-21,577,-18,575,-26,566,-33,564,-29,564,-27,563,-34,560,-38,561,-30,560,-26,560,-21,559,-17,556,-12,547,-1,541,-2,540,1,536,-7,537,-3,537,3,533,4,532,0,529,3,528,6,530,11,530,17,528,17,525,16,521,12,520,12,518,8,517,9,517,9,516,4,515,14,514,14,512,10,509,2,508,-14,509,-13,508,-20,507,-20,506,-30,507,-34,506,-37,502,-42,504,-47,503,-51,500,-56,501,-57,501,-49,505,-42,512,-31,512,-24,517,-33,514,-39,516,-42,516,-41,517,-44,517,-49,516,-52,517,-53,519,-52,519,-42,523,-40,525,-41,529,-47,528,-43,531,-34,533,-31,533,-32,534,-31,534,-27,533,-31,535,-29,537,-30,539,-28,541,-32,541,-36,545,-35,548,-30,550,-36,549,-40,548,-48,548,-49,547,-50,548,-52,550,-51,550,-47,555,-49,557,-49,559,-46,559,-48,561,-48,562,-52,559,-52,561,-50,562,-51,562,-54,560,-56,554,-57,553,-57,556,-55,558,-56,558,-56,561,-52,568,-57,565,-61,567,-57,569,-59,569,-56,572,-58,574,-56,575,-57,577,-56,579,-52,579,-54,581,-53,582,-50,583,-50,586,-31,586|-72,551,-69,552,-61,552,-57,548,-59,546,-56,547,-55,545,-57,545,-56,543,-63,540,-60,529,-62,525,-65,523,-63,522,-69,522,-70,522,-81,518,-84,519,-84,517,-93,515,-98,515,-95,517,-101,516,-96,519,-103,518,-99,521,-104,521,-104,522,-98,523,-99,524,-96,525,-88,527,-90,528,-92,526,-99,526,-95,528,-93,531,-89,532,-101,534,-101,535,-97,536,-99,537,-96,538,-99,539,-99,541,-101,542,-101,543,-85,542,-86,543,-81,546,-88,547,-84,549,-83,551,-77,553,-76,551,-77,550,-75,550,-75,552,-73,554,-70,552|-66,344,-59,358,-54,359,-53,359,-53,357,-51,355,-46,352,-34,352,-30,354,-28,351,-19,351,-9,357,-4,359,0,358,3,362,13,365,26,366,30,368,38,369,48,369,53,366,65,371,69,369,72,370,72,371,74,371,79,369,88,370,97,373,98,373,98,371,99,373,102,372,103,368,104,367,110,371,111,371,111,369,105,362,106,359,110,356,111,352,107,347,103,344,358,344,359,345,359,352,358,356,360,360,358,363,362,367,360,369,354,366,347,368,337,362,328,360,324,362,320,365,312,368,306,369,304,363,297,362,292,363,290,367,283,368,281,366,280,366,281,368,275,367,275,367,280,368,282,370,273,370,273,371,275,372,271,377,272,377,272,380,263,383,264,384,264,386,267,383,271,385,269,385,268,387,270,389,268,390,269,391,267,393,269,396,261,395,261,399,267,404,273,405,277,403,278,404,277,405,279,405,280,405,280,404,290,404,288,405,298,407,291,409,291,412,313,411,323,417,334,420,347,420,350,421,352,420,351,419,353,417,361,417,364,413,368,414,371,412,384,409,394,411,401,409,406,411,406,431,387,443,382,444,379,447,375,447,372,450,366,452,369,453,367,454,369,454,372,453,376,454,376,456,379,460,381,459,382,461,385,461,379,464,378,466,385,467,384,468,393,470,392,473,375,471,368,467,358,466,350,461,353,463,352,464,349,462,350,457,355,453,362,455,366,454,364,451,355,451,351,448,345,447,339,444,334,446,336,449,336,451,325,454,337,459,336,461,332,462,325,461,318,463,320,464,316,466,324,465,326,466,320,466,318,472,319,469,319,467,315,467,316,468,314,466,308,466,302,459,296,457,297,453,296,448,290,448,291,450,289,450,288,446,289,446,286,443,286,435,285,434,281,434,279,432,279,427,275,425,280,420,282,416,291,412,290,410,282,411,275,410,273,407,268,405,262,401,263,403,268,406,261,406,259,408,251,410,248,409,245,409,241,407,238,407,239,404,242,403,243,401,239,404,237,403,240,401,239,400,237,402,234,403,236,399,229,404,229,406,226,405,226,400,233,392,232,391,232,393,229,393,229,392,231,390,226,389,233,387,240,381,240,377,235,380,230,379,235,374,232,373,227,375,232,364,227,368,224,365,221,370,220,370,219,367,216,371,217,374,211,379,214,382,217,382,218,383,229,380,229,381,232,382,224,384,215,383,213,385,213,384,211,384,208,389,211,389,211,390,208,390,203,393,199,400,194,403,193,407,196,418,192,419,186,424,170,430,177,429,169,434,160,435,152,442,151,443,155,443,150,446,149,451,145,453,143,453,139,448,135,455,138,456,136,458,132,458,123,454,122,452,125,450,122,447,124,442,136,436,140,427,145,422,152,419,162,419,159,415,180,407,185,402,183,398,181,399,179,403,175,403,172,405,169,405,165,397,171,394,172,390,166,388,165,384,161,379,156,380,159,386,162,388,162,389,157,400,149,402,149,405,148,407,143,406,145,407,140,408,137,412,130,413,116,423,111,424,112,425,107,429,105,430,105,432,102,439,88,444,80,439,73,437,66,432,61,431,54,432,51,434,47,434,41,436,33,432,30,428,33,423,32,423,32,419,21,413,10,411,7,408,9,407,6,406,-1,399,-3,394,-1,390,2,388,-5,383,-8,378,-7,376,-13,376,-16,374,-22,367,-25,368,-28,367,-44,367,-47,365,-52,364,-54,361,-56,360,-60,362,-64,366,-62,369,-64,368,-69,373,-78,370,-86,371,-90,370,-88,374,-89,384,-87,384,-88,385,-92,384,-93,387,-90,387,-88,391,-91,387,-95,388,-94,393,-88,401,-87,408,-88,417,-89,418,-88,419,-89,419,-89,421,-87,423,-88,423,-87,424,-88,426,-90,426,-89,428,-92,430,-89,433,-84,434,-83,436,-77,438,-71,436,-58,436,-45,434,-36,435,-22,433,-16,434,-15,436,-12,446,-11,447,-12,448,-12,447,-11,455,-5,450,-8,455,-12,457,-10,457,-11,463,-18,465,-21,468,-20,470,-22,472,-20,473,-17,472,-25,473,-24,475,-28,475,-28,476,-43,478,-47,480,-43,482,-46,483,-42,483,-47,484,-47,485,-32,488,-27,485,-24,486,-20,486,-19,487,-14,487,-16,488,-16,492,-19,497,-13,497,-11,494,-2,493,4,494,1,495,2,497,14,501,16,503,16,507,18,509,34,514,42,514,35,515,43,515,40,516,42,516,39,518,40,519,45,523,48,529,51,530,55,533,68,534,72,533,71,534,72,537,76,537,80,537,82,534,83,536,85,534,86,539,92,539,98,536,90,539,89,543,86,543,90,545,87,548,86,551,87,552,87,553,81,556,82,566,87,565,89,567,92,567,93,570,91,570,88,567,83,568,86,571,94,572,100,576,106,577,105,576,105,572,103,570,103,566,109,564,108,562,104,563,102,559,99,558,100,558,96,555,97,553,95,550,97,550,97,548,100,547,99,545,107,543,110,544,111,543,109,540,114,539,121,542,126,545,130,544,134,541,137,542,140,538,146,536,146,538,139,539,138,541,144,539,162,543,166,546,173,547,181,548,188,547,184,547,188,544,194,544,199,546,200,549,207,551,211,556,210,553,206,550,212,549,212,555,211,558,210,566,217,576,226,577,233,571,236,570,244,573,243,578,245,584,241,583,238,584,235,587,237,588,235,588,234,589,235,592,241,593,241,594,244,595,254,595,255,596,279,594,281,596,281,598,283,597,285,598,289,598,291,600,302,599,297,602,291,602,286,604,285,605,286,605,287,606,285,607,265,604,266,606,264,604,260,605,260,603,258,603,257,603,244,600,235,600,230,598,232,600,229,602,228,601,225,600,226,604,214,606,214,610,216,615,215,616,216,616,213,620,213,623,211,626,215,630,217,630,215,632,223,633,222,634,225,636,236,640,246,648,253,649,252,650,254,650,253,651,253,655,247,657,246,659,231,657,224,659,223,656,216,654,216,653,214,653,216,651,211,648,215,645,210,642,208,639,186,632,183,630,185,630,185,629,182,628,179,629,179,627,180,626,176,625,174,625,174,623,176,622,174,619,175,617,172,617,171,616,172,607,177,605,180,606,188,601,190,598,180,594,186,593,183,591,170,587,162,586,169,585,167,584,168,582,166,578,167,575,165,573,165,571,163,567,158,561,148,562,148,560,144,560,142,558,143,555,142,554,129,554,130,557,125,563,128,563,127,564,129,565,129,566,124,569,119,577,117,577,117,580,114,581,114,583,112,584,111,590,114,591,108,592,106,594,106,598,106,596,104,595,104,593,102,590,98,590,96,591,97,590,82,581,75,580,70,580,69,582,67,581,66,581,67,583,61,584,56,586,56,590,61,589,64,590,61,590,59,591,60,593,64,595,52,592,52,596,55,597,58,597,62,598,57,599,63,604,66,604,65,602,67,604,70,605,62,603,51,596,52,601,57,601,53,602,51,604,56,607,51,606,50,610,68,611,70,610,70,611,76,612,73,613,74,614,72,612,66,613,64,611,51,612,50,614,53,615,49,617,49,619,60,618,67,619,53,619,51,620,51,622,54,622,57,624,67,625,61,624,64,626,75,625,77,626,75,627,81,627,67,627,69,629,76,631,81,631,86,628,82,632,86,633,84,635,86,636,91,636,92,635,97,636,100,634,108,635,107,636,114,638,112,639,115,640,113,640,109,639,110,638,109,638,101,635,96,637,106,644,116,648,113,648,115,650,122,652,125,651,129,653,124,652,121,654,127,659,130,660,128,661,140,663,131,662,131,664,132,666,140,668,137,669,143,672,154,672,144,673,150,676,156,673,157,675,152,676,153,678,148,677,150,680,156,679,153,680,160,682,163,679,163,680,164,681,162,683,176,684,166,685,166,686,171,687,177,691,181,692,181,693,183,695,189,693,186,695,190,696,192,697,197,698,196,694,200,698,203,699,203,696,201,693,205,695,207,695,205,697,206,699,212,699,214,700,220,698,218,701,214,702,227,704,234,700,234,702,242,706,254,706,250,702,250,701,259,706,266,706,266,704,271,706,282,706,282,702,285,706,302,706,309,704,309,703,299,701,288,701,296,700,296,698,298,697,301,697,302,699,304,697,315,697,320,698,320,700,329,698,330,697,329,696,321,696,324,695,330,695,330,694,335,694,333,692,331,691,337,693,359,692,377,687,384,684,396,681,398,681,398,682,406,678,406,665,401,663,387,661,355,664,348,666,345,666,345,667,332,668,328,670,329,671,319,672,332,667,332,665,337,664,334,663,341,662,347,660,348,658,344,654,348,650,350,648,349,646,350,644,356,644,364,640,374,638,380,639,381,641,380,643,372,644,366,648,365,649,368,650,369,652,398,646,401,648,404,648,398,653,398,656,406,659,406,344|-155,662,-146,664,-151,661,-147,660,-148,658,-144,658,-143,657,-145,656,-142,656,-136,655,-138,654,-136,651,-139,650,-139,649,-140,647,-144,647,-144,645,-146,644,-158,642,-166,639,-178,637,-179,635,-187,634,-202,636,-205,637,-204,638,-207,637,-212,639,-227,638,-227,641,-225,640,-221,641,-215,644,-221,643,-219,644,-220,644,-220,645,-216,646,-222,645,-223,646,-222,647,-225,648,-238,647,-240,649,-219,650,-218,652,-225,652,-218,654,-229,656,-239,654,-245,655,-242,656,-239,655,-241,658,-236,657,-233,658,-238,658,-235,659,-238,660,-234,660,-236,661,-235,662,-230,660,-227,660,-226,659,-224,659,-224,661,-229,662,-225,663,-231,663,-229,664,-224,664,-214,660,-215,660,-213,659,-214,657,-217,657,-214,656,-214,655,-211,653,-208,656,-205,656,-204,660,-202,661,-195,658,-194,661,-188,662,-181,657,-183,662,-179,661,-176,660,-172,662,-165,662,-165,664,-162,665,-160,665|229,588,225,587,224,589,221,589,226,591,229,590,230,588|278,359,277,360,277,362,282,364,281,361|264,393,265,390,262,390,263,392,261,391,258,392,262,394|-58,563,-63,563,-61,565,-63,566,-61,566,-58,565|-13,605,-11,604,-13,599,-13,602,-17,603,-14,603,-16,605,-14,606|-62,584,-66,581,-64,580,-70,578,-71,578,-69,579,-71,580,-70,582,-67,582,-68,583,-62,585|-61,575,-61,573,-57,572,-60,570,-60,572,-63,572,-68,574,-64,577|200,604,203,603,200,601,197,601,197,603,198,602,198,604|165,563,164,563,164,566,170,573,171,573|137,544,137,543,134,542,132,544,132,545,134,547|114,549,117,548,118,547,115,546,110,548,111,549|236,706,236,705,233,703,229,704|139,683,141,682,132,680,133,682|175,696,181,694,180,692,175,692,171,690,168,691,170,691,170,694,174,694,172,695|193,701,196,700,188,696,181,696,187,698,187,699,190,700,191,702|158,686,163,689,165,687,160,684,143,682,146,684,151,684,154,686,156,689,154,689,155,690,159,693,161,693,158,690,159,687|152,689,154,688,152,686,144,687,150,689,150,690|-216,706,-216,705,-219,704,-224,705,-224,706,-226,706,-227,704,-239,706,-266,706,-265,704,-266,702,-255,704,-222,701,-231,699,-230,698,-239,697,-237,696,-243,696,-243,694,-252,693,-251,692,-257,689,-266,687,-266,706'.split('|').map(function (poly) {
+    var a = poly.split(','), out = [];
+    for (var k = 0; k < a.length; k += 2) out.push({ lon: a[k] / 10, lat: a[k + 1] / 10 });
+    return out;
+  });
+  var CITIES = [
+    ['London', -0.1, 51.5], ['Paris', 2.35, 48.85], ['Berlin', 13.4, 52.5], ['Madrid', -3.7, 40.4],
+    ['Rom', 12.5, 41.9], ['Oslo', 10.75, 59.9], ['Moskau', 37.6, 55.75, 1], ['Reykjav\u00edk', -21.9, 64.15],
+    ['Warschau', 21.0, 52.2], ['Istanbul', 29.0, 41.0]
+  ];
+  function geoToGrid(lon, lat) { return { x: (lon - EU.lon0) / EU.dlon, y: (EU.lat0 - lat) / EU.dlat }; }
+  function isLand(lon, lat) {
+    var inside = false;
+    COAST.forEach(function (poly) {
+      for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        var a = poly[i], b = poly[j];
+        if ((a.lat > lat) !== (b.lat > lat) && lon < (b.lon - a.lon) * (lat - a.lat) / (b.lat - a.lat) + a.lon) inside = !inside;
+      }
+    });
+    return inside;
+  }
+
+  // Classic Gro\u00dfwetterlagen (Hess/Brezowsky) as surface pressure over the
+  // whole of Europe. Each part is an (optionally rotated) Gaussian bump on
+  // 1013 hPa: lon/lat of its centre, amp in hPa, sx/sy in km, rot in degrees.
   var PRESETS = [
-    { title: 'Westwetterlage', desc: 'Tiefs im Norden, Hoch im Süden: dicht gestaffelte, fast parallele Isobaren und kräftiger Westwind.',
-      gx: 0.0, gy: 1.0,
-      comps: [ { x: 0.35, y: -0.25, amp: -1.6, sx: 0.45, sy: 0.3 }, { x: 0.8, y: 1.3, amp: 1.2, sx: 0.5, sy: 0.35 }, { x: 0.55, y: 0.45, amp: -0.35, sx: 0.18, sy: 0.25 } ] },
-    { title: 'Hoch über Mitteleuropa', desc: 'Ein Hoch liegt mitten im Bild: geschlossene Ringe, weite Abstände, schwacher Wind.',
-      gx: 0.2, gy: 0.1,
-      comps: [ { x: 0.55, y: 0.5, amp: 1.4, sx: 0.28, sy: 0.24 }, { x: -0.1, y: 0.0, amp: -0.8, sx: 0.3, sy: 0.3 } ] },
-    { title: 'Sturmtief über der Nordsee', desc: 'Ein tiefes Tief im Nordwesten: enge Ringe, der stärkste Wind liegt an seiner Südflanke.',
-      gx: 0.25, gy: 0.35,
-      comps: [ { x: 0.3, y: 0.3, amp: -2.2, sx: 0.2, sy: 0.18 }, { x: 1.1, y: 0.9, amp: 0.8, sx: 0.35, sy: 0.3 } ] },
-    { title: 'Omega-Lage', desc: 'Ein Hoch im Norden, flankiert von zwei Tiefs — die Isobaren formen ein griechisches Ω. Oft wochenlang stabil.',
-      gx: 0.0, gy: 0.0,
-      comps: [ { x: 0.5, y: 0.25, amp: 1.5, sx: 0.2, sy: 0.3 }, { x: 0.05, y: 0.85, amp: -1.2, sx: 0.2, sy: 0.25 }, { x: 0.95, y: 0.85, amp: -1.2, sx: 0.2, sy: 0.25 } ] },
-    { title: 'Trog', desc: 'Eine lang gestreckte Tiefdruckrinne von Nord nach Süd: die Isobaren knicken in ihr scharf ein.',
-      gx: 0.0, gy: -0.15,
-      comps: [ { x: 0.45, y: 0.3, amp: -1.4, sx: 0.12, sy: 0.55 }, { x: 0.05, y: 0.5, amp: 0.6, sx: 0.25, sy: 0.4 }, { x: 0.95, y: 0.5, amp: 0.8, sx: 0.25, sy: 0.4 } ] }
+    { title: 'Westlage', code: 'WZ',
+      desc: 'Islandtief im Norden, Azorenhoch im S\u00fcden: dazwischen liegen die Isobaren fast parallel von West nach Ost. Atlantische Tiefs ziehen im Wochentakt \u00fcber Mitteleuropa \u2014 wechselhaft, windig, mild.',
+      comps: [ { lon: -20, lat: 64, amp: -27, sx: 1300, sy: 850 }, { lon: 18, lat: 69, amp: -12, sx: 1000, sy: 600 },
+               { lon: -26, lat: 37, amp: 17, sx: 1500, sy: 650 }, { lon: 8, lat: 39, amp: 9, sx: 1400, sy: 550 } ] },
+    { title: 'Hoch Mitteleuropa', code: 'HM',
+      desc: 'Ein kr\u00e4ftiges Hoch liegt direkt \u00fcber Mitteleuropa: weite, geschlossene Ringe, kaum Wind. Im Sommer sonnig und warm, im Winter Nebel und Frost. Die Tiefs m\u00fcssen au\u00dfen herum ziehen.',
+      comps: [ { lon: 12, lat: 50, amp: 21, sx: 1100, sy: 850 }, { lon: -24, lat: 64, amp: -18, sx: 1100, sy: 800 },
+               { lon: 30, lat: 68, amp: -8, sx: 900, sy: 600 }, { lon: 18, lat: 37, amp: -4, sx: 700, sy: 500 } ] },
+    { title: 'Trog Mitteleuropa', code: 'TrM',
+      desc: 'Zwischen einem Hochkeil \u00fcber dem Atlantik und einem Hoch \u00fcber Russland reicht eine Tiefdruckrinne von Skandinavien bis zum Mittelmeer. Die Isobaren beulen sich darin weit nach S\u00fcden aus \u2014 kalte Luft str\u00f6mt nach Mitteleuropa, oft mit Schauern, Gewittern und einem Genuatief. In H\u00f6henkarten (500 hPa) sieht der Trog genauso aus, nur noch deutlicher.',
+      comps: [ { lon: -22, lat: 50, amp: 20, sx: 900, sy: 1800, rot: 20 }, { lon: 16, lat: 64, amp: -11, sx: 800, sy: 600 },
+               { lon: 12, lat: 50, amp: -17, sx: 430, sy: 1500, rot: -10 }, { lon: 12, lat: 40, amp: -6, sx: 450, sy: 380 },
+               { lon: 36, lat: 54, amp: 18, sx: 900, sy: 1300 } ] },
+    { title: 'Omega-Lage', code: '\u03a9',
+      desc: 'Ein blockierendes Hoch \u00fcber der Nordsee und Skandinavien, flankiert von je einem Tief im Westen und im Osten: Die Isobaren formen ein griechisches \u03a9. Solche Lagen halten sich oft wochenlang \u2014 im Sommer Hitze und D\u00fcrre, an den Flanken Starkregen.',
+      comps: [ { lon: 10, lat: 60, amp: 24, sx: 950, sy: 850 }, { lon: -17, lat: 45, amp: -16, sx: 800, sy: 800 },
+               { lon: 33, lat: 45, amp: -15, sx: 800, sy: 800 }, { lon: -20, lat: 70, amp: -6, sx: 900, sy: 500 } ] },
+    { title: 'Nordwestlage', code: 'NWz',
+      desc: 'Das Azorenhoch schiebt einen Keil weit nach Norden, \u00fcber Skandinavien liegt ein Tief. Dazwischen weht ein kr\u00e4ftiger Nordwestwind: k\u00fchle Meeresluft, Schauer an den Nordr\u00e4ndern der Mittelgebirge und Stau an den Alpen.',
+      comps: [ { lon: -22, lat: 50, amp: 20, sx: 900, sy: 1500, rot: 30 }, { lon: 22, lat: 62, amp: -23, sx: 950, sy: 850 },
+               { lon: 30, lat: 40, amp: 5, sx: 900, sy: 600 } ] },
+    { title: 'Hoch Fennoskandien', code: 'HFa',
+      desc: 'Das Hoch sitzt \u00fcber Skandinavien, tiefer Druck \u00fcber dem Mittelmeer. \u00dcber Mitteleuropa verlaufen die Isobaren von Ost nach West: Ostwind bringt trockene Kontinentalluft \u2014 im Winter die klassische Lage f\u00fcr strengen Frost.',
+      comps: [ { lon: 22, lat: 64, amp: 22, sx: 1100, sy: 800 }, { lon: 12, lat: 39, amp: -11, sx: 900, sy: 550 },
+               { lon: -26, lat: 60, amp: -12, sx: 800, sy: 900 } ] },
+    { title: 'S\u00fcdwestlage', code: 'SWz',
+      desc: 'Ein gro\u00dfes Tief liegt westlich der Britischen Inseln, ein Hoch \u00fcber dem Balkan. Die Isobaren laufen von S\u00fcdwest nach Nordost: sehr milde, feuchte Luft str\u00f6mt heran, im Winter Tauwetter, im Sommer schw\u00fcl mit Gewittern.',
+      comps: [ { lon: -18, lat: 56, amp: -25, sx: 1000, sy: 950 }, { lon: 26, lat: 45, amp: 16, sx: 1100, sy: 800 },
+               { lon: -20, lat: 37, amp: 8, sx: 900, sy: 500 } ] },
+    { title: 'Sturmtief \u00fcber der Nordsee', code: 'Orkan',
+      desc: 'Ein tiefes Sturmtief liegt \u00fcber der Nordsee, die Isobaren dr\u00e4ngen sich an seiner S\u00fcdflanke \u2014 genau dort, \u00fcber Nordfrankreich, Benelux und Deutschland, tobt der Orkan. Je enger die Linien, desto st\u00e4rker der Wind.',
+      comps: [ { lon: 5, lat: 58, amp: -33, sx: 650, sy: 550 }, { lon: -26, lat: 40, amp: 15, sx: 1200, sy: 700 },
+               { lon: 36, lat: 48, amp: 9, sx: 1000, sy: 900 } ] }
   ];
 
   // One fixed colour per pressure level, so 1008 looks the same on every map.
-  var LEVEL_COLORS = ['#3a3a3a', '#8a6fd1', '#4a2e83', '#28348f', '#1093c4', '#00954f', '#6b6b23', '#d2a716', '#ef8f2c', '#c65a2a', '#df2a1e'];
+  var LEVEL_COLORS = ['#3a3a3a', '#8a6fd1', '#4a2e83', '#28348f', '#1093c4', '#00954f', '#6b6b23', '#d2a716', '#ef8f2c', '#c65a2a', '#df2a1e', '#a51c12', '#6e140d'];
   function levelColor(X) {
-    var k = Math.round((X - 984) / INTERVAL);
+    var k = Math.round((X - 984) / 4);
     return LEVEL_COLORS[Math.max(0, Math.min(LEVEL_COLORS.length - 1, k))];
   }
 
@@ -590,7 +636,12 @@
     // Aim for a random number of isobars within the mode's range, so maps
     // differ in difficulty; relax to the whole range, then to any count,
     // so a new map is always produced and never mixed with the old one.
-    var want = ri(mulberry32(hash32(base, 0x9e3779b9)), m.levels[0], m.levels[1]);
+    // (Europe maps keep real pressure values, so their level count is set by the pattern)
+    var want = m.europe ? null : ri(mulberry32(hash32(base, 0x9e3779b9)), m.levels[0], m.levels[1]);
+    if (m.europe && !S.landMask) {
+      S.landMask = [];
+      for (var n = 0; n < m.W * m.H; n++) S.landMask.push(isLand(EU.lon0 + (n % m.W) * EU.dlon, EU.lat0 - Math.floor(n / m.W) * EU.dlat));
+    }
     for (var attempt = 0; attempt < 3000; attempt++) {
       var rng = mulberry32(hash32(base, attempt));
       var range = attempt < 2000 ? m.levels : [1, 99];
@@ -599,16 +650,31 @@
     S.genAttempts = -1;
   }
 
+  // A Gro\u00dfwetterlage in real hPa: the preset's pressure systems, each nudged
+  // a little (position, strength, size) so no two maps are identical.
+  function europeField(rng) {
+    var p = PRESETS[S.preset], KX = 111.2 * Math.cos(50 * Math.PI / 180), KY = 111.2, f = [];
+    var comps = p.comps.map(function (c) {
+      var r = (c.rot || 0) * Math.PI / 180;
+      return { x: (c.lon + rr(rng, -1.5, 1.5)) * KX, y: (c.lat + rr(rng, -1, 1)) * KY, amp: c.amp * rr(rng, 0.9, 1.1),
+               sx: c.sx * rr(rng, 0.92, 1.08), sy: c.sy * rr(rng, 0.92, 1.08), cos: Math.cos(r), sin: Math.sin(r) };
+    });
+    var wave = { a: rr(rng, 0.5, 1.5), kx: rr(rng, 0.8, 1.6), ph: rr(rng, 0, 6.3) };
+    for (var n = 0; n < S.W * S.H; n++) {
+      var lon = EU.lon0 + (n % S.W) * EU.dlon, lat = EU.lat0 - Math.floor(n / S.W) * EU.dlat;
+      var X = lon * KX, Y = lat * KY, v = 1013 + wave.a * Math.sin(wave.kx * lon * Math.PI / 30 + wave.ph);
+      comps.forEach(function (c) {
+        var dx = X - c.x, dy = Y - c.y, u = (dx * c.cos + dy * c.sin) / c.sx, w = (-dx * c.sin + dy * c.cos) / c.sy;
+        v += c.amp * Math.exp(-(u * u + w * w) / 2);
+      });
+      f.push(v);
+    }
+    return f;
+  }
+
   function rawField(rng, m) {
     var W = S.W, H = S.H, comps = [], gx, gy, i, j, k;
-    if (m.id === 'synoptic') {
-      var p = PRESETS[S.preset];
-      gx = p.gx; gy = p.gy;
-      for (k = 0; k < p.comps.length; k++) {
-        var q = p.comps[k], jit = 0.04;
-        comps.push({ x: q.x + rr(rng, -jit, jit), y: q.y + rr(rng, -jit, jit), amp: q.amp, sx: q.sx, sy: q.sy });
-      }
-    } else if (m.id === 'storm') {
+    if (m.id === 'storm') {
       gx = rr(rng, -0.3, 0.3); gy = rr(rng, -0.3, 0.3);
       comps.push({ x: rr(rng, 0.35, 0.65), y: rr(rng, 0.35, 0.65), amp: -3, sx: rr(rng, 0.24, 0.34), sy: rr(rng, 0.22, 0.32) });
       if (rng() < 0.6) comps.push({ x: rr(rng, 0, 1), y: rng() < 0.5 ? -0.1 : 1.1, amp: 0.8, sx: 0.3, sy: 0.3 });
@@ -637,28 +703,35 @@
 
   function levelsCrossing(a, b) {
     var lo = Math.min(a, b), hi = Math.max(a, b), n = 0;
-    for (var X = Math.ceil(lo / INTERVAL) * INTERVAL; X < hi; X += INTERVAL) if (X > lo) n++;
+    var I = ivl();
+    for (var X = Math.ceil(lo / I) * I; X < hi; X += I) if (X > lo) n++;
     return n;
   }
 
   function tryGenerate(rng, m, want, range) {
-    var f = rawField(rng, m), i, k, N = f.length;
-    // Scale the steepest step between neighbours to a fraction of the
-    // isobar interval: this sets how tightly the isobars may pack.
-    var maxAdj = 0;
-    for (k = 0; k < S.E.length; k++) maxAdj = Math.max(maxAdj, Math.abs(f[S.E[k].a] - f[S.E[k].b]));
-    if (maxAdj < 1e-9) return false;
-    var scale = rr(rng, m.grad[0], m.grad[1]) * INTERVAL / maxAdj;
-    var mean = 0;
-    for (i = 0; i < N; i++) mean += f[i];
-    mean /= N;
-    var centre = m.id === 'storm' ? rr(rng, 998, 1008) : rr(rng, 1006, 1020);
-    var v = [];
-    for (i = 0; i < N; i++) v.push(centre + (f[i] - mean) * scale);
+    var I = ivl(), i, k, v, N;
+    if (m.europe) {
+      v = europeField(rng); N = v.length;
+    } else {
+      var f = rawField(rng, m);
+      N = f.length;
+      // Scale the steepest step between neighbours to a fraction of the
+      // isobar interval: this sets how tightly the isobars may pack.
+      var maxAdj = 0;
+      for (k = 0; k < S.E.length; k++) maxAdj = Math.max(maxAdj, Math.abs(f[S.E[k].a] - f[S.E[k].b]));
+      if (maxAdj < 1e-9) return false;
+      var scale = rr(rng, m.grad[0], m.grad[1]) * I / maxAdj;
+      var mean = 0;
+      for (i = 0; i < N; i++) mean += f[i];
+      mean /= N;
+      var centre = m.id === 'storm' ? rr(rng, 998, 1008) : rr(rng, 1006, 1020);
+      v = [];
+      for (i = 0; i < N; i++) v.push(centre + (f[i] - mean) * scale);
+    }
     // Keep every value at least 0.6 hPa from any isobar level, so the rounded
     // number on screen can never equal a level and never flips sides.
     for (i = 0; i < N; i++) {
-      var X = Math.round(v[i] / INTERVAL) * INTERVAL;
+      var X = Math.round(v[i] / I) * I;
       if (Math.abs(v[i] - X) < 0.6) v[i] = v[i] >= X ? X + 0.6 + rng() * 0.2 : X - 0.6 - rng() * 0.2;
       v[i] = Math.round(v[i] * 10) / 10;
     }
@@ -667,14 +740,25 @@
     var nSt = ri(rng, m.stations[0], m.stations[1]);
     var order = [];
     for (i = 0; i < N; i++) order.push(i);
-    for (i = N - 1; i > 0; i--) { var r = Math.floor(rng() * (i + 1)), t = order[i]; order[i] = order[r]; order[r] = t; }
-    var station = new Array(N).fill(false);
-    for (i = 0; i < nSt; i++) station[order[i]] = true;
+    if (m.europe) {
+      // mostly land stations (plus the odd ship or buoy), weighted shuffle
+      var key = order.map(function (n) { return Math.pow(rng(), 1 / (S.landMask[n] ? 4 : 1)); });
+      order.sort(function (a, b) { return key[b] - key[a]; });
+    } else {
+      for (i = N - 1; i > 0; i--) { var r = Math.floor(rng() * (i + 1)), t = order[i]; order[i] = order[r]; order[r] = t; }
+    }
+    var station = new Array(N).fill(false), placed = 0;
+    for (i = 0; i < N && placed < nSt; i++) {
+      var n0 = order[i], c0 = n0 % S.W;
+      // on the dense Europe grid, two labels side by side would overlap
+      if (m.europe && ((c0 > 0 && station[n0 - 1]) || (c0 < S.W - 1 && station[n0 + 1]))) continue;
+      station[n0] = true; placed++;
+    }
 
     var lo = Infinity, hi = -Infinity;
     for (i = 0; i < N; i++) if (station[i]) { lo = Math.min(lo, v[i]); hi = Math.max(hi, v[i]); }
     var levels = [];
-    for (var L = Math.ceil(lo / INTERVAL) * INTERVAL; L < hi; L += INTERVAL) if (L > lo) levels.push(L);
+    for (var L = Math.ceil(lo / I) * I; L < hi; L += I) if (L > lo) levels.push(L);
     if (levels.length < range[0] || levels.length > range[1]) return false;
     if (want && levels.length !== want) return false;
     for (k = 0; k < levels.length; k++) {
@@ -1127,14 +1211,45 @@
     return pts[0];
   }
 
+  // Sea, land and a few cities under the grid, clipped to the board.
+  function drawEurope(s) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s); ctx.clip();
+    ctx.fillStyle = '#dcebf2';
+    ctx.fillRect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s);
+    ctx.beginPath();
+    COAST.forEach(function (poly) {
+      poly.forEach(function (c, k) {
+        var q = geoToGrid(c.lon, c.lat);
+        if (k) ctx.lineTo(px(q.x), py(q.y)); else ctx.moveTo(px(q.x), py(q.y));
+      });
+      ctx.closePath();
+    });
+    ctx.fillStyle = '#f2e2c0'; ctx.fill();
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(17,17,17,.35)'; ctx.stroke();
+    ctx.font = '600 ' + Math.max(7.5, s * 0.22) + 'px Archivo, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    CITIES.forEach(function (c) {
+      var q = geoToGrid(c[1], c[2]), x = px(q.x), y = py(q.y);
+      ctx.fillStyle = 'rgba(17,17,17,.45)';
+      ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+      // labels sit right of the dot, or left of it near the eastern rim
+      ctx.textAlign = c[3] ? 'right' : 'left';
+      ctx.fillText(c[0], c[3] ? x - 3.5 : x + 3.5, y + s * 0.18);
+    });
+    ctx.restore();
+  }
+
   function draw() {
     var s = G.s, i, j;
     ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
     ctx.fillStyle = '#f2e2c0';
     ctx.fillRect(0, 0, G.w, G.h);
 
+    if (mode().europe) drawEurope(s);
+
     // grid
-    ctx.strokeStyle = 'rgba(17,17,17,.1)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = mode().europe ? 'rgba(17,17,17,.07)' : 'rgba(17,17,17,.1)'; ctx.lineWidth = 1;
     ctx.beginPath();
     for (i = 0; i < S.W; i++) { ctx.moveTo(px(i), py(0)); ctx.lineTo(px(i), py(S.H - 1)); }
     for (j = 0; j < S.H; j++) { ctx.moveTo(px(0), py(j)); ctx.lineTo(px(S.W - 1), py(j)); }
@@ -1146,7 +1261,9 @@
     if (S.showRef) {
       ctx.save();
       ctx.setLineDash([s * 0.12, s * 0.1]); ctx.lineWidth = Math.max(1.5, s * 0.05); ctx.lineCap = 'round';
-      S.levels.forEach(function (X) {
+      var I = ivl(), vmin = Math.min.apply(null, S.vals), vmax = Math.max.apply(null, S.vals), all = [];
+      for (var X0 = Math.ceil(vmin / I) * I; X0 < vmax; X0 += I) all.push(X0);
+      all.forEach(function (X) {
         ctx.strokeStyle = levelColor(X);
         ctx.beginPath();
         referenceSegs(X).forEach(function (sg) { ctx.moveTo(px(sg[0].x), py(sg[0].y)); ctx.lineTo(px(sg[1].x), py(sg[1].y)); });
@@ -1171,7 +1288,7 @@
     }
 
     // stations and hidden grid points
-    var fs = Math.max(9, Math.min(13, s * 0.25));
+    var fs = Math.max(S.W > 10 ? 8 : 9, Math.min(13, s * 0.25));
     var hintLvl = (S.hintOn || mode().hint) ? S.active : null;
     for (var n = 0; n < S.vals.length; n++) {
       var x = px(n % S.W), y = py(Math.floor(n / S.W));
@@ -1199,6 +1316,29 @@
         ctx.fillStyle = t.hit ? '#00954f' : '#df2a1e'; ctx.fill();
         ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
       });
+    }
+
+    // highs and lows of the true field
+    if (S.showRef) {
+      for (var e = 0; e < S.vals.length; e++) {
+        var ei = e % S.W, ej = Math.floor(e / S.W), ev = S.vals[e], isMax = true, isMin = true;
+        if (ei === 0 || ej === 0 || ei === S.W - 1 || ej === S.H - 1) continue;
+        for (var dj = -1; dj <= 1; dj++) for (var di = -1; di <= 1; di++) {
+          if (!di && !dj) continue;
+          var nv = S.vals[e + dj * S.W + di];
+          if (nv >= ev) isMax = false;
+          if (nv <= ev) isMin = false;
+        }
+        if ((isMax && ev > 1015) || (isMin && ev < 1011)) {
+          ctx.font = '900 ' + Math.round(s * 0.62) + 'px Archivo, sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff';
+          var lx = px(ei), ly = py(ej) - s * 0.5;
+          ctx.strokeText(isMax ? 'H' : 'T', lx, ly);
+          ctx.fillStyle = isMax ? '#28348f' : '#df2a1e';
+          ctx.fillText(isMax ? 'H' : 'T', lx, ly);
+        }
+      }
     }
 
     // one label per line, halfway along it
@@ -1390,7 +1530,7 @@
     } else if (!S.lines.length) {
       txt = 'Wähle eine Isobare oben und zeichne sie frei ein';
     } else {
-      txt = 'Zeichne ' + S.active + ' hPa — Stufen alle ' + INTERVAL + ' hPa';
+      txt = 'Zeichne ' + S.active + ' hPa — Stufen alle ' + ivl() + ' hPa';
     }
     badge.textContent = txt;
     badge.className = 'stage-hint-badge' + (cls ? ' ' + cls : '');
@@ -1428,8 +1568,8 @@
     $('preset-row').hidden = !syn;
     if (syn) {
       var p = PRESETS[S.preset];
-      $('preset-title').textContent = (S.preset + 1) + '/' + PRESETS.length + ' · ' + p.title;
-      $('preset-desc').textContent = p.desc + ' (idealisiert)';
+      $('preset-title').textContent = (S.preset + 1) + '/' + PRESETS.length + ' · ' + p.title + ' (' + p.code + ')';
+      $('preset-desc').textContent = p.desc;
     }
   }
 
