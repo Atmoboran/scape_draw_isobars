@@ -193,6 +193,18 @@
   .stage-hint-badge.warn{ background:var(--pastel-red); }
   .stage-hint-badge.good{ background:var(--bright-yellow); }
 
+  /* ============ MAP NOTE + ZOOM ============ */
+  .map-foot{ display:flex; align-items:flex-start; gap:10px; margin:-2px 0 12px; }
+  .map-note{ flex:1; min-width:0; margin:0; font-size:10.5px; font-weight:600; line-height:1.45; opacity:.8; }
+  .map-note b{ font-weight:800; }
+  .zoom-ctl{ flex:none; display:flex; gap:4px; }
+  .zoom-ctl button{
+    width:30px; height:30px; border:2px solid var(--ink); background:var(--paper); color:var(--ink);
+    font-family:inherit; font-weight:800; font-size:15px; line-height:1; cursor:pointer; padding:0;
+  }
+  .zoom-ctl button:active{ background:var(--ink); color:var(--paper); }
+  .zoom-ctl button:disabled{ opacity:.35; cursor:default; }
+
   /* ============ TOOL ROW ============ */
   .tool-row{ display:flex; gap:6px; margin:0 0 14px; }
   .tool-btn{
@@ -312,6 +324,7 @@
   :root[data-view="desktop"] .preset-row,
   :root[data-view="desktop"] .level-row,
   :root[data-view="desktop"] .tool-row,
+  :root[data-view="desktop"] .map-foot,
   :root[data-view="desktop"] .readout,
   :root[data-view="desktop"] .btn-row,
   :root[data-view="desktop"] .result,
@@ -374,6 +387,15 @@
       <div class="stage" id="stage">
         <canvas id="board"></canvas>
         <div class="stage-hint-badge" id="badge" hidden></div>
+      </div>
+    </div>
+
+    <div class="map-foot">
+      <p class="map-note" id="map-note"></p>
+      <div class="zoom-ctl" role="group" aria-label="Zoom">
+        <button type="button" id="zoom-out" aria-label="Herauszoomen">&minus;</button>
+        <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+        <button type="button" id="zoom-reset" aria-label="Ganze Karte zeigen">&#x2922;</button>
       </div>
     </div>
 
@@ -443,6 +465,14 @@
         </div>
       </details>
       <details class="topic">
+        <summary>Bodendruck oder H&ouml;henkarte? Und welcher Ma&szlig;stab?</summary>
+        <div class="topic-body">
+          <p class="blurb">Alle Karten im Spiel zeigen den <b>Bodendruck</b>: den Luftdruck an jeder Station, auf Meeresh&ouml;he umgerechnet &mdash; sonst h&auml;tte eine Bergstation immer viel weniger Druck als eine Station an der K&uuml;ste. So sehen die Bodenwetterkarten des Deutschen Wetterdienstes aus, mit Isobaren alle 5&nbsp;hPa.</p>
+          <p class="blurb"><b>H&ouml;henkarten</b> funktionieren anders: Sie zeigen, in welcher H&ouml;he ein bestimmter Druck herrscht, meist 500&nbsp;hPa in etwa 5,5&nbsp;km H&ouml;he, gemessen in geopotentiellen Dekametern (etwa 552&nbsp;gpdm). Die Linien hei&szlig;en dort Isohypsen. Tr&ouml;ge und R&uuml;cken sind in der H&ouml;he besonders deutlich; am Boden zeichnen sie sich als ausgebeulte Isobaren und Tiefdruckrinnen ab.</p>
+          <p class="blurb"><b>Ma&szlig;stab:</b> Die Europakarte reicht von 26&deg;&nbsp;West bis 40&deg;&nbsp;Ost und von 35&deg; bis 70&deg;&nbsp;Nord. Ein K&auml;stchen ist 5,5 L&auml;ngengrade breit und 3,5 Breitengrade hoch, bei 50&deg;&nbsp;Nord also rund 390&nbsp;km in beide Richtungen; nach Norden hin wird die Karte etwas gestreckt. Die &Uuml;bungsfelder der anderen Modi haben keinen geografischen Ma&szlig;stab.</p>
+        </div>
+      </details>
+      <details class="topic">
         <summary>Wie wird bewertet?</summary>
         <div class="topic-body">
           <p class="blurb">Es gibt keine einzig richtige L&ouml;sung. Das Spiel pr&uuml;ft deine Linien <b>strukturell</b>: Liegt f&uuml;r jede Isobare jede Station auf der richtigen Seite? F&uuml;r jede Druckstufe werden alle Paare aus einer Station darunter und einer dar&uuml;ber gebildet &mdash; jedes Paar, das deine Linien nicht trennen, kostet.</p>
@@ -494,7 +524,8 @@
 
   var PAD = 0.62;          // board margin, in cells
   var RASTER = 16;         // raster pixels per cell for the region test
-  var SNAP = 0.4;          // how close an end must be to the rim / a loose end to snap, in cells
+  var SNAP = 0.4;          // how close an end must be to the rim / a loose end to snap, in cells (at zoom 1)
+  function snapR() { return SNAP / Math.sqrt(G.z); }
 
   var MODES = [
     { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], maxCross: 1, hint: true, time: 0 },
@@ -866,13 +897,13 @@
     for (var round = 0; round < 4 && !L.closed; round++) {
       var changed = false;
       var first = L.pts[0], last = L.pts[L.pts.length - 1];
-      if (!onBorder(first) && !onBorder(last) && dist(first, last) < SNAP && pathLength(L.pts) > 1.2) {
+      if (!onBorder(first) && !onBorder(last) && dist(first, last) < snapR() && pathLength(L.pts) > 1.2) {
         L.pts.push({ x: first.x, y: first.y }); L.closed = true; break;
       }
       for (var end = 0; end < 2; end++) {
         var isFirst = end === 0, p = isFirst ? L.pts[0] : L.pts[L.pts.length - 1];
         if (onBorder(p)) continue;
-        var other = nearestLooseEnd(p, SNAP, L.lvl, L);
+        var other = nearestLooseEnd(p, snapR(), L.lvl, L);
         if (other && dist(p, other.p) <= borderDist(p)) {
           var M = other.line, mp = M.pts.slice();
           if (isFirst) L.pts.reverse();
@@ -881,7 +912,7 @@
           S.lines.splice(S.lines.indexOf(M), 1);
           changed = true; break;
         }
-        if (borderDist(p) < SNAP) {
+        if (borderDist(p) < snapR()) {
           var q = projectBorder(p);
           if (isFirst) L.pts.unshift(q); else L.pts.push(q);
           changed = true;
@@ -892,7 +923,7 @@
   }
 
   function processStroke(raw) {
-    var pts = rdp(raw, 0.06);
+    var pts = rdp(raw, 0.06 / G.z);
     pts = chaikin(pts, 3);
     return pts.map(clampPt);
   }
@@ -1142,7 +1173,11 @@
   var canvas = document.getElementById('board');
   var ctx = canvas.getContext('2d');
   var badge = document.getElementById('badge');
-  var G = { s: 40, ox: 0, oy: 0, w: 0, h: 0, dpr: 1 };
+  // u: cell size at zoom 1 (sizes of text and marks); s: cell size on screen
+  // (positions). Zooming scales positions only, so labels and lines keep
+  // their size and zooming in makes room for small-scale detail.
+  var G = { s: 40, u: 40, ox: 0, oy: 0, ox0: 0, oy0: 0, w: 0, h: 0, dpr: 1, z: 1, tx: 0, ty: 0 };
+  var ZMAX = 5;
   var drag = null, hover = null, flashMsg = null, flashTimer = null;
 
   function layout() {
@@ -1151,10 +1186,28 @@
     var topRoom = 34; // space for the hint badge
     var h = s * (S.H - 1 + 2 * PAD) + topRoom;
     stage.style.height = h + 'px';
-    G.s = s; G.ox = PAD * s; G.oy = PAD * s + topRoom; G.w = w; G.h = h;
+    G.u = s; G.ox0 = PAD * s; G.oy0 = PAD * s + topRoom; G.w = w; G.h = h;
     G.dpr = Math.min(window.devicePixelRatio || 1, 3);
     canvas.width = Math.round(w * G.dpr); canvas.height = Math.round(h * G.dpr);
+    applyView();
   }
+
+  function applyView() {
+    G.z = Math.max(1, Math.min(ZMAX, G.z));
+    G.tx = Math.min(0, Math.max(G.w * (1 - G.z), G.tx));
+    G.ty = Math.min(0, Math.max(G.h * (1 - G.z), G.ty));
+    G.s = G.u * G.z; G.ox = G.tx + G.ox0 * G.z; G.oy = G.ty + G.oy0 * G.z;
+    var zo = document.getElementById('zoom-out'), zr = document.getElementById('zoom-reset'), zi = document.getElementById('zoom-in');
+    if (zo) { zo.disabled = G.z <= 1.001; zr.disabled = G.z <= 1.001; zi.disabled = G.z >= ZMAX - 0.001; }
+  }
+  // zoom by factor f keeping the point under (cx, cy) (stage pixels) in place
+  function zoomAt(cx, cy, f) {
+    var bx = (cx - G.tx) / G.z, by = (cy - G.ty) / G.z;
+    G.z = Math.max(1, Math.min(ZMAX, G.z * f));
+    G.tx = cx - bx * G.z; G.ty = cy - by * G.z;
+    applyView(); draw();
+  }
+  function resetView() { G.z = 1; G.tx = 0; G.ty = 0; applyView(); }
 
   function px(x) { return G.ox + x * G.s; }
   function py(y) { return G.oy + y * G.s; }
@@ -1227,7 +1280,8 @@
     });
     ctx.fillStyle = '#f2e2c0'; ctx.fill();
     ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(17,17,17,.35)'; ctx.stroke();
-    ctx.font = '600 ' + Math.max(7.5, s * 0.22) + 'px Archivo, sans-serif';
+    var u = G.u;
+    ctx.font = '600 ' + Math.max(7.5, u * 0.22) + 'px Archivo, sans-serif';
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     CITIES.forEach(function (c) {
       var q = geoToGrid(c[1], c[2]), x = px(q.x), y = py(q.y);
@@ -1235,13 +1289,23 @@
       ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
       // labels sit right of the dot, or left of it near the eastern rim
       ctx.textAlign = c[3] ? 'right' : 'left';
-      ctx.fillText(c[0], c[3] ? x - 3.5 : x + 3.5, y + s * 0.18);
+      ctx.fillText(c[0], c[3] ? x - 3.5 : x + 3.5, y + u * 0.18);
     });
+    // scale bar: 500 km, true at 50\u00b0N (the map is stretched towards the pole)
+    var KM_PER_CELL = EU.dlon * 111.2 * Math.cos(50 * Math.PI / 180);
+    var bx0 = px(0.25), bx1 = px(0.25 + 500 / KM_PER_CELL), by0 = py(S.H - 1 - 0.3);
+    ctx.strokeStyle = '#111111'; ctx.lineWidth = 2; ctx.lineCap = 'butt';
+    ctx.beginPath();
+    ctx.moveTo(bx0, by0 - 4); ctx.lineTo(bx0, by0); ctx.lineTo(bx1, by0); ctx.lineTo(bx1, by0 - 4);
+    ctx.stroke();
+    ctx.fillStyle = '#111111'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    ctx.font = '800 ' + Math.max(7.5, u * 0.22) + 'px Archivo, sans-serif';
+    ctx.fillText('500 km (50\u00b0 N)', bx0, by0 - 5);
     ctx.restore();
   }
 
   function draw() {
-    var s = G.s, i, j;
+    var s = G.s, u = G.u, i, j;
     ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
     ctx.fillStyle = '#f2e2c0';
     ctx.fillRect(0, 0, G.w, G.h);
@@ -1260,7 +1324,7 @@
     // reference overlay
     if (S.showRef) {
       ctx.save();
-      ctx.setLineDash([s * 0.12, s * 0.1]); ctx.lineWidth = Math.max(1.5, s * 0.05); ctx.lineCap = 'round';
+      ctx.setLineDash([u * 0.12, u * 0.1]); ctx.lineWidth = Math.max(1.5, u * 0.05); ctx.lineCap = 'round';
       var I = ivl(), vmin = Math.min.apply(null, S.vals), vmax = Math.max.apply(null, S.vals), all = [];
       for (var X0 = Math.ceil(vmin / I) * I; X0 < vmax; X0 += I) all.push(X0);
       all.forEach(function (X) {
@@ -1273,7 +1337,7 @@
     }
 
     // player's isobars
-    var lw = Math.max(2.5, s * 0.085);
+    var lw = Math.max(2.5, u * 0.085);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     S.lines.forEach(function (L) {
       ctx.strokeStyle = levelColor(L.lvl);
@@ -1288,7 +1352,7 @@
     }
 
     // stations and hidden grid points
-    var fs = Math.max(S.W > 10 ? 8 : 9, Math.min(13, s * 0.25));
+    var fs = Math.max(S.W > 10 ? 8 : 9, Math.min(13, u * 0.25));
     var hintLvl = (S.hintOn || mode().hint) ? S.active : null;
     for (var n = 0; n < S.vals.length; n++) {
       var x = px(n % S.W), y = py(Math.floor(n / S.W));
@@ -1303,7 +1367,7 @@
         ctx.fillStyle = 'rgba(17,17,17,.55)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(txt, x, y);
       } else {
-        ctx.beginPath(); ctx.arc(x, y, Math.max(1.6, s * 0.04), 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(x, y, Math.max(1.6, u * 0.04), 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(17,17,17,.35)'; ctx.fill();
       }
     }
@@ -1311,7 +1375,7 @@
     // interpolation targets after checking: green where the line passes, red where it misses
     if (S.showPts && S.result) {
       S.result.targets.forEach(function (t) {
-        var x = px(t.x), y = py(t.y), r = Math.max(3.5, s * 0.08);
+        var x = px(t.x), y = py(t.y), r = Math.max(3.5, u * 0.08);
         ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
         ctx.fillStyle = t.hit ? '#00954f' : '#df2a1e'; ctx.fill();
         ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
@@ -1330,10 +1394,10 @@
           if (nv <= ev) isMin = false;
         }
         if ((isMax && ev > 1015) || (isMin && ev < 1011)) {
-          ctx.font = '900 ' + Math.round(s * 0.62) + 'px Archivo, sans-serif';
+          ctx.font = '900 ' + Math.round(u * 0.62) + 'px Archivo, sans-serif';
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff';
-          var lx = px(ei), ly = py(ej) - s * 0.5;
+          var lx = px(ei), ly = py(ej) - u * 0.5;
           ctx.strokeText(isMax ? 'H' : 'T', lx, ly);
           ctx.fillStyle = isMax ? '#28348f' : '#df2a1e';
           ctx.fillText(isMax ? 'H' : 'T', lx, ly);
@@ -1391,20 +1455,44 @@
   }
 
   function eraseAt(p) {
-    var L = lineNear(p, 0.25), changed = false;
-    while (L) { S.lines.splice(S.lines.indexOf(L), 1); changed = true; L = lineNear(p, 0.25); }
+    var r = 0.25 / G.z, L = lineNear(p, r), changed = false;
+    while (L) { S.lines.splice(S.lines.indexOf(L), 1); changed = true; L = lineNear(p, r); }
     return changed;
   }
 
+  var touches = new Map(), pinch = null, pan = null, gestureHold = false;
+  function capture(ev) { try { canvas.setPointerCapture(ev.pointerId); } catch (e) {} }
+  function stageXY(ev) { var r = canvas.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+  function pinchState() {
+    var pts = Array.from(touches.values()).slice(0, 2);
+    return { c: { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }, d: Math.max(10, dist(pts[0], pts[1])) };
+  }
+
   canvas.addEventListener('pointerdown', function (ev) {
-    if (S.locked) return;
     ev.preventDefault();
-    canvas.setPointerCapture(ev.pointerId);
+    if (ev.pointerType !== 'mouse') touches.set(ev.pointerId, stageXY(ev));
+    // two fingers: zoom and pan; the stroke the first finger began is dropped
+    if (touches.size === 2) {
+      if (drag) { restore(drag.before); drag = null; }
+      var st = pinchState();
+      pinch = { c0: st.c, d0: st.d, z0: G.z, tx0: G.tx, ty0: G.ty };
+      gestureHold = true;
+      draw(); return;
+    }
+    if (touches.size > 2 || gestureHold) return;
+    // mouse: right or middle button pans
+    if (ev.pointerType === 'mouse' && (ev.button === 1 || ev.button === 2)) {
+      capture(ev);
+      pan = { id: ev.pointerId, p0: stageXY(ev), tx0: G.tx, ty0: G.ty };
+      return;
+    }
+    if (S.locked) return;
+    capture(ev);
     var p = toBoard(ev);
     drag = { id: ev.pointerId, p0: p, moved: false, changed: false, before: snapshot(), raw: null, cont: null };
     if (S.tool === 'pen') {
       // Starting on a loose end carries that line on, whatever its level.
-      var e = nearestLooseEnd(p, SNAP);
+      var e = nearestLooseEnd(p, snapR());
       if (e) {
         drag.cont = e.line;
         if (e.first) e.line.pts.reverse();
@@ -1421,20 +1509,36 @@
   });
 
   canvas.addEventListener('pointermove', function (ev) {
+    if (touches.has(ev.pointerId)) touches.set(ev.pointerId, stageXY(ev));
+    if (pinch) {
+      if (touches.size >= 2) {
+        var st = pinchState(), bx = (pinch.c0.x - pinch.tx0) / pinch.z0, by = (pinch.c0.y - pinch.ty0) / pinch.z0;
+        G.z = Math.max(1, Math.min(ZMAX, pinch.z0 * st.d / pinch.d0));
+        G.tx = st.c.x - bx * G.z; G.ty = st.c.y - by * G.z;
+        applyView(); draw();
+      }
+      return;
+    }
+    if (pan && pan.id === ev.pointerId) {
+      var q0 = stageXY(ev);
+      G.tx = pan.tx0 + q0.x - pan.p0.x; G.ty = pan.ty0 + q0.y - pan.p0.y;
+      applyView(); draw();
+      return;
+    }
     var p = toBoard(ev);
     if (!drag || drag.id !== ev.pointerId) {
       if (ev.pointerType === 'mouse' && S.tool === 'eraser' && !S.locked) {
-        var h = lineNear(p, 0.25);
+        var h = lineNear(p, 0.25 / G.z);
         if (h !== hover) { hover = h; draw(); }
       }
       return;
     }
-    if (dist(p, drag.p0) > 0.12) drag.moved = true;
+    if (dist(p, drag.p0) > 0.12 / G.z) drag.moved = true;
     if (S.tool === 'eraser') {
       if (eraseAt(p)) { drag.changed = true; recompute(); edited(); }
     } else {
       var q = clampPt(p), last = drag.raw[drag.raw.length - 1];
-      if (dist(q, last) > 0.04) drag.raw.push(q);
+      if (dist(q, last) > 0.04 / G.z) drag.raw.push(q);
     }
     draw();
   });
@@ -1444,7 +1548,7 @@
     if (S.tool === 'pen') {
       if (!drag.moved && !drag.cont) {
         // a tap on a line removes it (undo brings it back)
-        var L = lineNear(drag.p0, 0.22);
+        var L = lineNear(drag.p0, 0.22 / G.z);
         if (L) { S.lines.splice(S.lines.indexOf(L), 1); drag.changed = true; }
       } else if (drag.raw.length > 1) {
         var pts = processStroke(drag.raw);
@@ -1467,8 +1571,24 @@
     drag = null;
     draw(); updateStatus();
   }
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
+  function pointerEnd(ev) {
+    touches.delete(ev.pointerId);
+    if (pinch && touches.size < 2) pinch = null;
+    if (touches.size === 0) gestureHold = false;
+    if (pan && pan.id === ev.pointerId) { pan = null; return; }
+    endDrag(ev);
+  }
+  canvas.addEventListener('pointerup', pointerEnd);
+  canvas.addEventListener('pointercancel', pointerEnd);
+  canvas.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+  canvas.addEventListener('wheel', function (ev) {
+    ev.preventDefault();
+    var q = stageXY(ev);
+    zoomAt(q.x, q.y, Math.exp(-ev.deltaY * 0.0015));
+  }, { passive: false });
+  document.getElementById('zoom-in').addEventListener('click', function () { zoomAt(G.w / 2, G.h / 2, 1.5); });
+  document.getElementById('zoom-out').addEventListener('click', function () { zoomAt(G.w / 2, G.h / 2, 1 / 1.5); });
+  document.getElementById('zoom-reset').addEventListener('click', function () { resetView(); draw(); });
   canvas.addEventListener('pointerleave', function () { if (!drag && hover) { hover = null; draw(); } });
 
   // ================================================================
@@ -1563,6 +1683,15 @@
     updateBadge();
   }
 
+  function renderNote() {
+    var m = mode(), txt = '<b>Bodendruck</b> in hPa, auf Meeresh\u00f6he reduziert \u00b7 Isobaren alle ' + ivl() + ' hPa \u00b7 ';
+    txt += m.europe
+      ? '<b>Ma\u00dfstab:</b> 1 K\u00e4stchen \u2248 390 km (bei 50\u00b0 N), Karte 26\u00b0 W\u201340\u00b0 O, 35\u201370\u00b0 N'
+      : '<b>Ma\u00dfstab:</b> \u00dcbungsfeld ohne geografischen Ma\u00dfstab';
+    txt += ' \u00b7 Zoomen: zwei Finger, Mausrad oder +/\u2212' + (matchMedia('(pointer: fine)').matches ? ', verschieben mit rechter Maustaste' : '');
+    document.getElementById('map-note').innerHTML = txt;
+  }
+
   function renderPreset() {
     var syn = mode().id === 'synoptic';
     $('preset-row').hidden = !syn;
@@ -1591,7 +1720,9 @@
     generate();
     S.lines = []; S.undo = []; S.result = null; S.showRef = false; S.showPts = false;
     S.hintOn = false; S.hintUsed = false; S.locked = false; S.tool = 'pen';
-    S.active = S.levels[Math.floor((S.levels.length - 1) / 2)];
+    S.active = S.levels[0];
+    resetView();
+    renderNote();
     recompute();
     $('result').hidden = true;
     layout();

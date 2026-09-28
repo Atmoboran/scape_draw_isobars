@@ -23,11 +23,33 @@ contour interpolation, not painting by numbers.
   near its own start closes the ring, and an end near a loose end of
   another line of the same level joins the two. Starting a stroke on a loose
   end carries that line on (and switches to its level).
+- The lowest isobar is selected when a map opens; the chips switch level.
+- **Zoom** for small-scale lines: pinch with two fingers, the mouse wheel,
+  or the −/+/⤢ buttons under the board; pan with two fingers or the right
+  (or middle) mouse button. Zoom scales positions only — labels, line
+  widths and markers keep their size, so zooming in makes room for detail —
+  and the stroke smoothing, snapping and tap distances shrink with the zoom,
+  so small wiggles drawn zoomed in survive. A second finger landing
+  mid-stroke cancels that stroke instead of leaving a stray line.
 - Tap a line to delete it, or drag across lines with the **Radierer**;
   **Zurück** (or Ctrl/Cmd+Z) undoes either.
 - Crossings are not blocked but marked live with a red ✕ — the drawing stays
   fluid, and the rule is still visible the moment it is broken. Loose ends
   inside the field are marked with a hollow ring.
+
+## What the maps show
+
+Every map is **surface pressure** (Bodendruck) in hPa, reduced to sea level
+— the kind of chart the DWD publishes as its Bodenwetterkarte — not an
+upper-air chart. Upper-air charts (typically 500 hPa, in geopotential
+decametres, with isohypses instead of isobars) show troughs and ridges most
+clearly; on the surface they appear as bulging isobars and low-pressure
+channels. A line under the board states this for the current mode together
+with the interval and the scale: on the Europe map one cell is about
+390 km at 50°N (the map is stretched towards the pole), with a 500 km
+scale bar; the other modes are practice fields without a geographic scale.
+The explainer section „Bodendruck oder Höhenkarte? Und welcher Maßstab?“
+says the same for players.
 
 ## Scoring
 
