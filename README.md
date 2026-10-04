@@ -17,16 +17,27 @@ contour interpolation, not painting by numbers.
   between the lowest and the highest station), each with its own fixed
   colour, so 1008 looks the same on every map.
 - Drawing is freehand, with finger or mouse. When the finger lifts, the
-  stroke is simplified (Ramer–Douglas–Peucker) and rounded off (Chaikin
-  corner cutting), so a shaky hand still gives a calm curve. An end that
+  stroke is smoothed with a small Gaussian along its length (about 0.06
+  cells at the current zoom): finger jitter goes, curves stay round, and a
+  deliberate kink stays a kink — so what is shown is what is scored. An end that
   comes within 0.4 cells of the rim snaps onto it, an end that comes back
-  near its own start closes the ring, and an end near a loose end of
+  near its own start closes the ring (rim snapping carries the line on in
+  the direction it was heading where that reaches the rim, so it does not
+  bend sharply into it), and an end near a loose end of
   another line of the same level joins the two. Starting a stroke on a loose
   end carries that line on (and switches to its level).
 - The lowest isobar is selected when a map opens; the chips switch level.
-- **Zoom** for small-scale lines: pinch with two fingers, the mouse wheel,
-  or the −/+/⤢ buttons under the board; pan with two fingers or the right
-  (or middle) mouse button. Zoom scales positions only — labels, line
+- **One finger draws, two fingers move.** On a phone, two fingers moving
+  together pan the zoomed map, and whatever the map cannot take — all of it
+  at full view — scrolls the page, so the page can be scrolled over the
+  board without switching tools. Only a clear spreading or pinching of the
+  fingers (more than about 25 % change in their distance) switches the
+  gesture to zooming; both fingers' moves are applied together once per
+  frame, so a sideways move no longer jitters the zoom.
+- **Zoom** for small-scale lines: pinch with two fingers, Ctrl/Cmd + mouse
+  wheel (or a trackpad pinch), or the −/+/⤢ buttons under the board; on
+  desktop the plain wheel scrolls the page and the right (or middle) mouse
+  button pans. Zoom scales positions only — labels, line
   widths and markers keep their size, so zooming in makes room for detail —
   and the stroke smoothing, snapping and tap distances shrink with the zoom,
   so small wiggles drawn zoomed in survive. A second finger landing
@@ -47,7 +58,7 @@ clearly; on the surface they appear as bulging isobars and low-pressure
 channels. A line under the board states this for the current mode together
 with the interval and the scale: on the Europe map one cell is about
 390 km at 50°N (the map is stretched towards the pole), with a 500 km
-scale bar; the other modes are practice fields without a geographic scale.
+scale bar; the tutorial is a practice field without a geographic scale.
 The explainer section „Bodendruck oder Höhenkarte? Und welcher Maßstab?“
 says the same for players.
 
@@ -55,26 +66,21 @@ says the same for players.
 
 There is no single correct drawing, so the game scores structure, not pixels.
 
-- **Trennung (60 points).** For each level, every pair of stations with one
+- **Trennung (75 points).** For each level, every pair of stations with one
   below and one above that level must end up on opposite sides of the drawn
   lines. The level's lines are burnt into a raster of 16 pixels per cell
   (Bresenham, 8-connected) and a 4-connected flood fill, which cannot slip
   through such a line, labels the regions; every below/above pair sharing a
   region costs. A line that stops short leaves a gap the fill runs around,
   so it separates nothing. Stations on the wrong side get a red ring.
-- **Interpolation (25 points).** Uses only what the player can see. For
-  each level, every station is paired with its (up to three) nearest
-  stations on the other side of that level within 2.3 cells; linear
-  interpolation along each pair gives a support point where the isobar
-  should pass — between 1006 and 1010 the 1008 line belongs exactly in the
-  middle. The score is how close the player's line of that level comes to
-  each point: full marks within 0.25 cells, nothing beyond 0.9, closer
-  pairs weighing more. Points that land within 0.2 cells of each other are
-  merged. After checking, the points are shown as diamonds: green where the
-  line passes within about 0.4 cells, red where it misses.
-- **Glattheit (15 points).** The turning angle along every line, sampled
-  every 0.2 cells: gentle bends up to 20° are free, sharper kinks cost more
-  and more up to 70°.
+- **Glattheit (25 points).** Every line is sampled every 0.2 cells and the
+  change in bending from one step to the next is added up (ignoring changes
+  under 2°). Real isobars bend steadily, so a round ring or a wide even arc
+  adds almost nothing, while a wobble, a zigzag or a kink adds a lot. The
+  score is exp(−change per cell of line / 70°). Measured on drawn strokes:
+  arcs and rings 97–100 %, a slightly shaky hand about 75 %, a very shaky
+  one about 40 %, a single sharp kink about 75 %, a wavy line or zigzag
+  near 0 %; the true-field isobars score 90–100 %.
 - **Penalties.** Isobars never cross: every crossing (between two lines, or
   a line with itself) costs 15 points and marks the result as invalid. An
   isobar never ends in the middle of the field: every loose end costs 10. The **Tipp**, which colours stations blue/red relative
@@ -83,10 +89,12 @@ There is no single correct drawing, so the game scores structure, not pixels.
 The top verdict and three stars need a structurally correct map: every
 level drawn, every station on the right side, no loose ends, no crossings.
 
-After checking, **Wahres Feld** overlays the isobars of the complete hidden
-field (marching squares with linear interpolation on every grid point) and
-shows the hidden values. It does not count towards the score: the player
-cannot know those values, so it is there to show what was really going on
+After checking, **Wahres Feld** shows the model solution: the isobars of
+the complete hidden field, traced by marching squares on a grid five times
+finer than the board from the continuous field the map was built from, so
+they come out as smooth curves rather than one straight piece per cell. It
+also shows the hidden grid values and marks highs and lows with H and T.
+It does not count towards the score; it shows what was really going on
 between the stations — the same gap every sparse observing network has.
 
 ## Modes
@@ -94,8 +102,6 @@ between the stations — the same gap every sparse observing network has.
 | Mode | What it is |
 |---|---|
 | Tutorial | 5×5 grid, 6 stations, one isobar, stations always coloured, step-by-step prompts |
-| Klassisch | 7×7 grid, 16–20 stations, 2–4 isobars, no help |
-| Sturm | 9×9 grid, a deep low with tightly packed rings — often two isobars between neighbouring grid points — 4–6 isobars, 2 minutes |
 | Wetterlagen | All of Europe with coastlines, 13×11 grid, 40–48 stations, eight Großwetterlagen |
 
 ### Wetterlagen: the whole of Europe
@@ -132,17 +138,21 @@ next step.
 
 ## Map generation
 
-Outside the Europe mode, each map is a sum of Gaussian highs and lows plus a
-background gradient, rescaled so the steepest step between neighbouring grid points is a set
-fraction of the 4 hPa interval — below one interval in most modes, up to
-1.6 intervals in Sturm, which is what packs its rings so tightly. Every
-value is kept at least 0.6 hPa from a level, so the rounded number on
-screen never equals a level and never shows the wrong side of it. Stations
-are a random subset, and the generator retries until the number of levels
-matches a randomly chosen target for the mode and every level has at least
-two stations on each side (falling back to the mode's range, then to any
-count, so a new map is always produced). Best scores per mode are kept in
-`localStorage`.
+Every map is built from a continuous pressure field: for the tutorial a
+tilted plane with one gentle bump, rescaled so the step between
+neighbouring grid points is 55–75 % of the 4 hPa interval; for Wetterlagen
+the Großwetterlage's pressure systems in real hPa. The grid shows that field
+at its points. Every station value is kept at least 0.6 hPa from a level,
+so the rounded number on screen never equals a level and never shows the
+wrong side of it; that small nudge is carried into the continuous field as
+a gentle dent around the station (radius 0.85 cells, so it never reaches
+the next grid point), so the field matches every shown value exactly and
+the reference isobars keep clear of the stations. The tutorial only takes
+maps whose stations need no nudge, so its model solution has no dents at
+all. Hidden grid points keep their true value. Stations are a random
+subset, and the generator retries until the number of levels fits and
+every level has at least two stations on each side. Best scores per mode
+are kept in `localStorage`.
 
 ## Tech
 

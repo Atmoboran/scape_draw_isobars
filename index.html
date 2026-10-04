@@ -410,7 +410,6 @@
       <div>Stationen<b id="ro-stations">&ndash;</b></div>
       <div>Isobaren<b id="ro-levels">&ndash;</b></div>
       <div>Offene Enden<b id="ro-open">0</b></div>
-      <div id="ro-time-wrap">Zeit<b id="ro-time">&ndash;</b></div>
     </div>
 
     <div class="btn-row">
@@ -431,29 +430,23 @@
         <div class="crit">
           <div class="crit-top"><span>Trennung</span><span id="res-sep">0 %</span></div>
           <div class="crit-bar"><i id="bar-sep"></i></div>
-          <div class="crit-note">Wie viele Stationspaare (eins unter, eins &uuml;ber der Isobare) deine Linien korrekt trennen. 60 Punkte.</div>
-        </div>
-        <div class="crit">
-          <div class="crit-top"><span>Interpolation</span><span id="res-int">0 %</span></div>
-          <div class="crit-bar"><i id="bar-int"></i></div>
-          <div class="crit-note">Zwischen je zwei benachbarten Stationen &mdash; eine unter, eine &uuml;ber der Stufe &mdash; liegt ein St&uuml;tzpunkt, linear interpoliert: Zwischen 1006 und 1010 geh&ouml;rt die 1008 genau in die Mitte. Wie nah l&auml;uft deine Linie daran vorbei? 25 Punkte.</div>
+          <div class="crit-note">Wie viele Stationspaare (eins unter, eins &uuml;ber der Isobare) deine Linien korrekt trennen. 75 Punkte.</div>
         </div>
         <div class="crit">
           <div class="crit-top"><span>Glattheit</span><span id="res-smooth">0 %</span></div>
           <div class="crit-bar"><i id="bar-smooth"></i></div>
-          <div class="crit-note">Echte Isobaren schwingen weich &mdash; sanfte B&ouml;gen sind frei, scharfe Knicke kosten. 15 Punkte.</div>
+          <div class="crit-note">Echte Isobaren biegen sich gleichm&auml;&szlig;ig &mdash; Ringe und weite B&ouml;gen sind frei, aber jedes Wackeln, Zickzack oder ein Knick kostet. 25 Punkte.</div>
         </div>
         <div class="penalties" id="res-pen"></div>
         <ul class="level-report" id="res-levels"></ul>
         <div class="result-actions">
-          <button type="button" id="btn-pts">St&uuml;tzpunkte</button>
           <button type="button" id="btn-ref">Wahres Feld</button>
           <button type="button" id="btn-retry">Weiterzeichnen</button>
         </div>
       </div>
     </section>
 
-    <p class="hint" id="hint">Zeichne frei mit Finger oder Maus. Enden nahe am Rand rasten am Rand ein, ein Ende nahe am Anfang schlie&szlig;t den Ring. Setz an einem offenen Ende an, um weiterzuzeichnen &mdash; tippe eine Linie an, um sie zu l&ouml;schen.</p>
+    <p class="hint" id="hint">Zeichne frei mit Finger oder Maus. Enden nahe am Rand rasten am Rand ein, ein Ende nahe am Anfang schlie&szlig;t den Ring. Setz an einem offenen Ende an, um weiterzuzeichnen &mdash; tippe eine Linie an, um sie zu l&ouml;schen. Zum Scrollen &uuml;ber die Karte: zwei Finger.</p>
 
     <div class="explainer">
       <details class="topic">
@@ -477,23 +470,20 @@
         <div class="topic-body">
           <p class="blurb">Es gibt keine einzig richtige L&ouml;sung. Das Spiel pr&uuml;ft deine Linien <b>strukturell</b>: Liegt f&uuml;r jede Isobare jede Station auf der richtigen Seite? F&uuml;r jede Druckstufe werden alle Paare aus einer Station darunter und einer dar&uuml;ber gebildet &mdash; jedes Paar, das deine Linien nicht trennen, kostet.</p>
           <p class="blurb">Harte Regeln: Isobaren kreuzen sich nie &mdash; jede Kreuzung wird rot markiert und kostet 15 Punkte. Und sie enden nie mitten im Feld: Ein offenes Ende trennt nichts, weil der Druck um das Ende herum &bdquo;flie&szlig;en&ldquo; kann, und kostet zus&auml;tzlich 10 Punkte. Der Tipp kostet ebenfalls 10.</p>
-          <p class="blurb">Dazu kommen zwei Bonus-Kriterien: <b>Interpolation</b> (l&auml;uft die Linie dort, wo man zwischen benachbarten Stationen linear interpolieren w&uuml;rde?) und <b>Glattheit</b> (wenige harte Knicke). Beide beruhen nur auf dem, was du auf der Karte siehst.</p>
+          <p class="blurb">Dazu kommt die <b>Glattheit</b>: Echte Isobaren biegen sich gleichm&auml;&szlig;ig. Ein Ring oder ein weiter Bogen ist v&ouml;llig in Ordnung, aber Wackeln, Zickzack und Knicke kosten Punkte.</p>
         </div>
       </details>
       <details class="topic">
-        <summary>Interpolation und wahres Feld</summary>
+        <summary>Was zeigt &bdquo;Wahres Feld&ldquo;?</summary>
         <div class="topic-body">
-          <p class="blurb">Wo genau eine Isobare zwischen zwei Stationen verl&auml;uft, kannst du nur sch&auml;tzen. Die einfachste und ehrlichste Sch&auml;tzung ist <b>lineare Interpolation</b>: Liegt eine Station bei 1006&nbsp;hPa und ihre Nachbarin bei 1010&nbsp;hPa, geh&ouml;rt die 1008er-Linie genau in die Mitte; bei 1007 und 1011 ein Viertel weiter von der 1007 weg. Genau das bewertet das Kriterium &bdquo;Interpolation&ldquo; &mdash; nur mit den Zahlen, die du auch siehst.</p>
-          <p class="blurb">Deine Linien zeichnest du frei. F&uuml;r die Trennung werden sie in ein feines Raster &uuml;bertragen, und eine F&uuml;llung pr&uuml;ft, welche Stationen im selben Gebiet landen &mdash; bewertet wird also nicht Pixel f&uuml;r Pixel, sondern die Seite, auf der jede Station liegt.</p>
-          <p class="blurb">Hinter jeder Karte steckt au&szlig;erdem ein vollst&auml;ndiges Druckfeld auf allen Gitterpunkten. Nach dem Pr&uuml;fen zeigt &bdquo;Wahres Feld&ldquo; die Isobaren, die sich daraus ergeben (Marching Squares). Sie z&auml;hlen nicht zur Punktzahl &mdash; sie zeigen nur, was zwischen den Stationen wirklich los war. So geht es Meteorologen auch: Die Messnetze sind l&uuml;ckenhaft.</p>
+          <p class="blurb">Deine Linien zeichnest du frei. F&uuml;r die Bewertung werden sie in ein feines Raster &uuml;bertragen, und eine F&uuml;llung pr&uuml;ft, welche Stationen im selben Gebiet landen &mdash; bewertet wird also nicht Pixel f&uuml;r Pixel, sondern die Seite, auf der jede Station liegt. Es gibt viele richtige L&ouml;sungen.</p>
+          <p class="blurb">Hinter jeder Karte steckt ein vollst&auml;ndiges, stetiges Druckfeld &mdash; auch zwischen den Stationen. Nach dem Pr&uuml;fen zeigt &bdquo;Wahres Feld&ldquo; die Isobaren dieses Feldes als Musterl&ouml;sung, mit Hochs (H) und Tiefs (T) und den Werten an den Gitterpunkten ohne Station. Sie wird auf einem f&uuml;nfmal feineren Gitter berechnet (Marching Squares) und ist darum so glatt wie eine echte Wetterkarte. Sie z&auml;hlt nicht zur Punktzahl &mdash; sie zeigt, was zwischen den Stationen wirklich los war. So geht es Meteorologen auch: Die Messnetze sind l&uuml;ckenhaft.</p>
         </div>
       </details>
       <details class="topic">
         <summary>Die Spielmodi</summary>
         <div class="topic-body">
           <p class="blurb"><b>Tutorial:</b> wenige Stationen, eine einzige Isobare, und die Stationen sind nach &bdquo;darunter&ldquo; (blau) und &bdquo;dar&uuml;ber&ldquo; (rot) eingef&auml;rbt.</p>
-          <p class="blurb"><b>Klassisch:</b> 16&ndash;20 Stationen, mehrere Isobaren, keine Hilfen.</p>
-          <p class="blurb"><b>Sturm:</b> ein kr&auml;ftiges Tief mit eng liegenden Isobaren &mdash; oft zwei zwischen benachbarten Stationen &mdash; und nur zwei Minuten Zeit.</p>
           <p class="blurb"><b>Wetterlagen:</b> ganz Europa mit K&uuml;sten, feinerem Gitter und echten hPa-Werten &mdash; acht Gro&szlig;wetterlagen von der Westlage &uuml;ber den Trog Mitteleuropa bis zur Omega-Lage. Isobaren wie beim Deutschen Wetterdienst alle 5&nbsp;hPa. Nach dem Pr&uuml;fen zeigt &bdquo;Wahres Feld&ldquo; die ganze Lage mit Hochs (H) und Tiefs (T).</p>
         </div>
       </details>
@@ -529,8 +519,6 @@
 
   var MODES = [
     { id: 'tutorial', name: 'Tutorial', W: 5, H: 5, stations: [6, 6], levels: [1, 1], grad: [0.55, 0.75], maxCross: 1, hint: true, time: 0 },
-    { id: 'classic',  name: 'Klassisch', W: 7, H: 7, stations: [16, 20], levels: [2, 4], grad: [0.5, 0.85], maxCross: 1, hint: false, time: 0 },
-    { id: 'storm',    name: 'Sturm', W: 9, H: 9, stations: [26, 30], levels: [4, 6], grad: [1.2, 1.6], maxCross: 2, hint: false, time: 120 },
     { id: 'synoptic', name: 'Wetter­lagen', W: 13, H: 11, stations: [40, 48], levels: [3, 9], maxCross: 3, hint: false, time: 0, interval: 5, europe: true }
   ];
   function ivl() { return mode().interval || 4; }
@@ -634,7 +622,7 @@
     lines: [],           // {lvl, pts:[{x,y}], closed}
     crossings: [], open: [],
     active: 0, tool: 'pen',
-    undo: [], result: null, showRef: false, showPts: false, hintOn: false, hintUsed: false,
+    undo: [], result: null, showRef: false, hintOn: false, hintUsed: false,
     timeLeft: 0, locked: false, timerId: null
   };
 
@@ -684,52 +672,34 @@
   // A Gro\u00dfwetterlage in real hPa: the preset's pressure systems, each nudged
   // a little (position, strength, size) so no two maps are identical.
   function europeField(rng) {
-    var p = PRESETS[S.preset], KX = 111.2 * Math.cos(50 * Math.PI / 180), KY = 111.2, f = [];
+    var p = PRESETS[S.preset], KX = 111.2 * Math.cos(50 * Math.PI / 180), KY = 111.2;
     var comps = p.comps.map(function (c) {
       var r = (c.rot || 0) * Math.PI / 180;
       return { x: (c.lon + rr(rng, -1.5, 1.5)) * KX, y: (c.lat + rr(rng, -1, 1)) * KY, amp: c.amp * rr(rng, 0.9, 1.1),
                sx: c.sx * rr(rng, 0.92, 1.08), sy: c.sy * rr(rng, 0.92, 1.08), cos: Math.cos(r), sin: Math.sin(r) };
     });
     var wave = { a: rr(rng, 0.5, 1.5), kx: rr(rng, 0.8, 1.6), ph: rr(rng, 0, 6.3) };
-    for (var n = 0; n < S.W * S.H; n++) {
-      var lon = EU.lon0 + (n % S.W) * EU.dlon, lat = EU.lat0 - Math.floor(n / S.W) * EU.dlat;
+    // pressure at grid position (x, y), which may lie between grid points
+    return function (gxp, gyp) {
+      var lon = EU.lon0 + gxp * EU.dlon, lat = EU.lat0 - gyp * EU.dlat;
       var X = lon * KX, Y = lat * KY, v = 1013 + wave.a * Math.sin(wave.kx * lon * Math.PI / 30 + wave.ph);
-      comps.forEach(function (c) {
-        var dx = X - c.x, dy = Y - c.y, u = (dx * c.cos + dy * c.sin) / c.sx, w = (-dx * c.sin + dy * c.cos) / c.sy;
+      for (var k = 0; k < comps.length; k++) {
+        var c = comps[k], dx = X - c.x, dy = Y - c.y, u = (dx * c.cos + dy * c.sin) / c.sx, w = (-dx * c.sin + dy * c.cos) / c.sy;
         v += c.amp * Math.exp(-(u * u + w * w) / 2);
-      });
-      f.push(v);
-    }
-    return f;
+      }
+      return v;
+    };
   }
 
-  function rawField(rng, m) {
-    var W = S.W, H = S.H, comps = [], gx, gy, i, j, k;
-    if (m.id === 'storm') {
-      gx = rr(rng, -0.3, 0.3); gy = rr(rng, -0.3, 0.3);
-      comps.push({ x: rr(rng, 0.35, 0.65), y: rr(rng, 0.35, 0.65), amp: -3, sx: rr(rng, 0.24, 0.34), sy: rr(rng, 0.22, 0.32) });
-      if (rng() < 0.6) comps.push({ x: rr(rng, 0, 1), y: rng() < 0.5 ? -0.1 : 1.1, amp: 0.8, sx: 0.3, sy: 0.3 });
-    } else if (m.id === 'tutorial') {
-      var ang = rr(rng, 0, Math.PI * 2);
-      gx = Math.cos(ang); gy = Math.sin(ang);
-      comps.push({ x: rr(rng, 0.2, 0.8), y: rr(rng, 0.2, 0.8), amp: rr(rng, -0.4, 0.4), sx: 0.3, sy: 0.3 });
-    } else {
-      gx = rr(rng, -0.8, 0.8); gy = rr(rng, -0.8, 0.8);
-      var n = ri(rng, 1, 3);
-      for (k = 0; k < n; k++) {
-        comps.push({ x: rr(rng, 0.1, 0.9), y: rr(rng, 0.1, 0.9), amp: (rng() < 0.5 ? -1 : 1) * rr(rng, 0.8, 1.6), sx: rr(rng, 0.18, 0.35), sy: rr(rng, 0.18, 0.35) });
-      }
-    }
-    var f = [];
-    for (j = 0; j < H; j++) for (i = 0; i < W; i++) {
-      var x = i / (W - 1), y = j / (H - 1), v = gx * x + gy * y;
-      for (k = 0; k < comps.length; k++) {
-        var c = comps[k], dx = (x - c.x) / c.sx, dy = (y - c.y) / c.sy;
-        v += c.amp * Math.exp(-(dx * dx + dy * dy) / 2);
-      }
-      f.push(v);
-    }
-    return f;
+  // Tutorial field: a tilted plane plus one gentle bump, as a continuous
+  // function of grid position (x, y), so the reference can be traced finely.
+  function rawField(rng) {
+    var W = S.W, H = S.H, ang = rr(rng, 0, Math.PI * 2), gx = Math.cos(ang), gy = Math.sin(ang);
+    var c = { x: rr(rng, 0.2, 0.8), y: rr(rng, 0.2, 0.8), amp: rr(rng, -0.4, 0.4), sx: 0.3, sy: 0.3 };
+    return function (gxp, gyp) {
+      var x = gxp / (W - 1), y = gyp / (H - 1), dx = (x - c.x) / c.sx, dy = (y - c.y) / c.sy;
+      return gx * x + gy * y + c.amp * Math.exp(-(dx * dx + dy * dy) / 2);
+    };
   }
 
   function levelsCrossing(a, b) {
@@ -740,11 +710,12 @@
   }
 
   function tryGenerate(rng, m, want, range) {
-    var I = ivl(), i, k, v, N;
+    var I = ivl(), i, k, v, N, fn;
     if (m.europe) {
-      v = europeField(rng); N = v.length;
+      fn = europeField(rng);
     } else {
-      var f = rawField(rng, m);
+      var g = rawField(rng), f = [];
+      for (i = 0; i < S.W * S.H; i++) f.push(g(i % S.W, Math.floor(i / S.W)));
       N = f.length;
       // Scale the steepest step between neighbours to a fraction of the
       // isobar interval: this sets how tightly the isobars may pack.
@@ -755,12 +726,16 @@
       var mean = 0;
       for (i = 0; i < N; i++) mean += f[i];
       mean /= N;
-      var centre = m.id === 'storm' ? rr(rng, 998, 1008) : rr(rng, 1006, 1020);
-      v = [];
-      for (i = 0; i < N; i++) v.push(centre + (f[i] - mean) * scale);
+      var centre = rr(rng, 1006, 1020);
+      fn = function (x, y) { return centre + (g(x, y) - mean) * scale; };
     }
+    // the hidden truth is a continuous field; the grid shows it at the nodes
+    v = [];
+    for (i = 0; i < S.W * S.H; i++) v.push(fn(i % S.W, Math.floor(i / S.W)));
+    N = v.length;
     // Keep every value at least 0.6 hPa from any isobar level, so the rounded
     // number on screen can never equal a level and never flips sides.
+    var raw = v.map(function (x) { return Math.round(x * 10) / 10; });
     for (i = 0; i < N; i++) {
       var X = Math.round(v[i] / I) * I;
       if (Math.abs(v[i] - X) < 0.6) v[i] = v[i] >= X ? X + 0.6 + rng() * 0.2 : X - 0.6 - rng() * 0.2;
@@ -797,7 +772,29 @@
       for (i = 0; i < N; i++) if (station[i]) { if (v[i] < levels[k]) below++; else above++; }
       if (below < 2 || above < 2) return false;
     }
+    // Only stations need the nudge; hidden grid points keep their true value.
+    // The station nudges are carried into the continuous field with a gentle
+    // dent around each station (radius 0.85 cells, so it never reaches the
+    // next grid point): the field then matches every shown value, and the
+    // reference isobars keep clear of the stations without wobbling.
+    var corr = [], W0 = S.W, base = fn;
+    for (i = 0; i < N; i++) {
+      if (!station[i]) v[i] = raw[i];
+      corr.push(station[i] ? v[i] - base(i % W0, Math.floor(i / W0)) : 0);
+      // the tutorial only takes maps whose stations need no nudge at all
+      if (m.hint && Math.abs(corr[i]) > 0.06) return false;
+    }
+    fn = function (x, y) {
+      var val = base(x, y);
+      for (var jj = Math.floor(y); jj <= Math.ceil(y) && jj < S.H; jj++) for (var ii = Math.floor(x); ii <= Math.ceil(x) && ii < W0; ii++) {
+        var c = corr[jj * W0 + ii]; if (!c) continue;
+        var r2 = ((x - ii) * (x - ii) + (y - jj) * (y - jj)) / 0.7225;
+        if (r2 < 1) val += c * (1 - r2) * (1 - r2) * (1 - r2);
+      }
+      return val;
+    };
     S.vals = v; S.station = station; S.levels = levels;
+    S.fieldFn = fn; S.fine = null; S.refCache = {};
     return true;
   }
 
@@ -865,6 +862,23 @@
   }
   function borderDist(p) { return Math.min(p.x, S.W - 1 - p.x, p.y, S.H - 1 - p.y); }
   function onBorder(p) { return borderDist(p) < 1e-6; }
+  // Carry a line straight on in the direction it was heading until it meets
+  // the rim, if that happens within maxD -- no kink, unlike a projection.
+  function extendToBorder(tail, maxD) {
+    var p = tail[tail.length - 1], a = tail[0];
+    var dx = p.x - a.x, dy = p.y - a.y, l = Math.hypot(dx, dy);
+    if (l < 0.05) return null;
+    dx /= l; dy /= l;
+    var t = Infinity;
+    if (dx > 1e-9) t = Math.min(t, (S.W - 1 - p.x) / dx); else if (dx < -1e-9) t = Math.min(t, -p.x / dx);
+    if (dy > 1e-9) t = Math.min(t, (S.H - 1 - p.y) / dy); else if (dy < -1e-9) t = Math.min(t, -p.y / dy);
+    if (!(t <= maxD)) return null;
+    var q = clampPt({ x: p.x + dx * t, y: p.y + dy * t });
+    // land exactly on the rim
+    var bd = [q.x, S.W - 1 - q.x, q.y, S.H - 1 - q.y], k = bd.indexOf(Math.min.apply(null, bd));
+    if (k === 0) q.x = 0; else if (k === 1) q.x = S.W - 1; else if (k === 2) q.y = 0; else q.y = S.H - 1;
+    return q;
+  }
   function projectBorder(p) {
     var d = [p.x, S.W - 1 - p.x, p.y, S.H - 1 - p.y], k = d.indexOf(Math.min.apply(null, d));
     return k === 0 ? { x: 0, y: p.y } : k === 1 ? { x: S.W - 1, y: p.y } : k === 2 ? { x: p.x, y: 0 } : { x: p.x, y: S.H - 1 };
@@ -913,7 +927,7 @@
           changed = true; break;
         }
         if (borderDist(p) < snapR()) {
-          var q = projectBorder(p);
+          var q = extendToBorder(isFirst ? L.pts.slice(0, 6).reverse() : L.pts.slice(-6), snapR() * 1.8) || projectBorder(p);
           if (isFirst) L.pts.unshift(q); else L.pts.push(q);
           changed = true;
         }
@@ -923,9 +937,21 @@
   }
 
   function processStroke(raw) {
-    var pts = rdp(raw, 0.06 / G.z);
-    pts = chaikin(pts, 3);
-    return pts.map(clampPt);
+    // Smooth along the stroke with a small Gaussian (about 0.06 cells at the
+    // current zoom): finger jitter goes, curves stay round, and a deliberate
+    // kink stays a (slightly rounded) kink that the scoring will see.
+    var step = 0.03 / G.z, q = resample(raw, step), n = q.length, out = [q[0]], sig = 2, K = 6;
+    for (var i = 1; i < n - 1; i++) {
+      var sx = 0, sy = 0, sw = 0, reach = Math.min(K, i, n - 1 - i);
+      for (var k = -reach; k <= reach; k++) {
+        var w = Math.exp(-k * k / (2 * sig * sig));
+        sx += q[i + k].x * w; sy += q[i + k].y * w; sw += w;
+      }
+      out.push({ x: sx / sw, y: sy / sw });
+    }
+    if (n > 1) out.push(q[n - 1]);
+    if (pathLength(out) > 0.2) out = resample(out, 0.1 / G.z);
+    return out.map(clampPt);
   }
 
   function recompute() {
@@ -1010,98 +1036,68 @@
     };
   }
 
-  function referenceSegs(X) {
-    // Marching squares with linear interpolation on the full hidden field.
-    var segs = [], v = S.vals;
-    for (var k = 0; k < S.C.length; k++) {
-      var c = S.C[k];
-      var cr = {
-        T: (v[c.TL] - X) * (v[c.TR] - X) < 0,
-        R: (v[c.TR] - X) * (v[c.BR] - X) < 0,
-        B: (v[c.BR] - X) * (v[c.BL] - X) < 0,
-        L: (v[c.BL] - X) * (v[c.TL] - X) < 0
-      };
-      var sides = ['T', 'R', 'B', 'L'].filter(function (s) { return cr[s]; });
-      if (sides.length === 2) segs.push([c[sides[0]], c[sides[1]]]);
-      else if (sides.length === 4) {
-        var centre = (v[c.TL] + v[c.TR] + v[c.BR] + v[c.BL]) / 4;
-        if ((centre - X) * (v[c.TL] - X) > 0) { segs.push([c.T, c.R]); segs.push([c.B, c.L]); }
-        else { segs.push([c.T, c.L]); segs.push([c.B, c.R]); }
+  // The reference ("Wahres Feld"): marching squares on a grid five times
+  // finer than the board, sampled from the continuous hidden field, so its
+  // isobars come out as smooth curves rather than one straight piece per cell.
+  var FINE = 5;
+  function fineGrid() {
+    if (S.fine) return S.fine;
+    var w = (S.W - 1) * FINE + 1, h = (S.H - 1) * FINE + 1, v = new Float64Array(w * h);
+    for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) v[j * w + i] = S.fieldFn(i / FINE, j / FINE);
+    return (S.fine = { w: w, h: h, v: v });
+  }
+  function referenceLines(X) {
+    if (S.refCache[X]) return S.refCache[X];
+    var F = fineGrid(), w = F.w, h = F.h, v = F.v, nH = (w - 1) * h, segs = [], byEdge = new Map();
+    function pt(e) {
+      var a, b;
+      if (e < nH) { var j = Math.floor(e / (w - 1)), i = e % (w - 1); a = [i, j]; b = [i + 1, j]; }
+      else { var e2 = e - nH, j2 = Math.floor(e2 / w), i2 = e2 % w; a = [i2, j2]; b = [i2, j2 + 1]; }
+      var va = v[a[1] * w + a[0]], vb = v[b[1] * w + b[0]], t = (X - va) / (vb - va);
+      return { x: (a[0] + (b[0] - a[0]) * t) / FINE, y: (a[1] + (b[1] - a[1]) * t) / FINE };
+    }
+    function add(e1, e2) {
+      var k = segs.length;
+      segs.push([e1, e2]);
+      [e1, e2].forEach(function (e) { if (!byEdge.has(e)) byEdge.set(e, []); byEdge.get(e).push(k); });
+    }
+    for (var j = 0; j < h - 1; j++) for (var i = 0; i < w - 1; i++) {
+      var tl = v[j * w + i], tr = v[j * w + i + 1], br = v[(j + 1) * w + i + 1], bl = v[(j + 1) * w + i];
+      var T = j * (w - 1) + i, B = (j + 1) * (w - 1) + i, L = nH + j * w + i, Rr = L + 1;
+      var cr = [];
+      if ((tl - X) * (tr - X) < 0) cr.push(T);
+      if ((tr - X) * (br - X) < 0) cr.push(Rr);
+      if ((br - X) * (bl - X) < 0) cr.push(B);
+      if ((bl - X) * (tl - X) < 0) cr.push(L);
+      if (cr.length === 2) add(cr[0], cr[1]);
+      else if (cr.length === 4) {
+        if (((tl + tr + br + bl) / 4 - X) * (tl - X) > 0) { add(T, Rr); add(B, L); } else { add(T, L); add(B, Rr); }
       }
     }
-    return segs.map(function (sg) { return [refPoint(sg[0], X), refPoint(sg[1], X), sg[0], sg[1]]; });
-  }
-  function refPoint(e, X) {
-    var E0 = S.E[e], va = S.vals[E0.a], vb = S.vals[E0.b], t = (X - va) / (vb - va);
-    var ax = E0.a % S.W, ay = Math.floor(E0.a / S.W), bx = E0.b % S.W, by = Math.floor(E0.b / S.W);
-    return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
-  }
-  // Chain the reference pieces into polylines (used by the test hook).
-  function referenceLines(X) {
-    var segs = referenceSegs(X), used = new Array(segs.length).fill(false), out = [];
-    function find(e) { for (var i = 0; i < segs.length; i++) if (!used[i] && (segs[i][2] === e || segs[i][3] === e)) return i; return -1; }
-    for (var s = 0; s < segs.length; s++) {
-      if (used[s]) continue;
-      used[s] = true;
-      var ids = [segs[s][2], segs[s][3]], pts = [segs[s][0], segs[s][1]];
+    // chain the pieces into polylines
+    var used = new Uint8Array(segs.length), out = [];
+    function next(e) { var l = byEdge.get(e) || []; for (var q = 0; q < l.length; q++) if (!used[l[q]]) return l[q]; return -1; }
+    for (var s0 = 0; s0 < segs.length; s0++) {
+      if (used[s0]) continue;
+      used[s0] = 1;
+      var ids = [segs[s0][0], segs[s0][1]];
       for (var dir = 0; dir < 2; dir++) {
         for (;;) {
-          var endE = ids[ids.length - 1], k = find(endE);
+          var endE = ids[ids.length - 1], k = next(endE);
           if (k < 0) break;
-          used[k] = true;
-          var nextE = segs[k][2] === endE ? segs[k][3] : segs[k][2], nextP = segs[k][2] === endE ? segs[k][1] : segs[k][0];
-          ids.push(nextE); pts.push(nextP);
+          used[k] = 1;
+          ids.push(segs[k][0] === endE ? segs[k][1] : segs[k][0]);
         }
-        ids.reverse(); pts.reverse();
+        ids.reverse();
       }
-      out.push({ lvl: X, pts: pts, closed: ids[0] === ids[ids.length - 1] });
+      out.push({ lvl: X, pts: ids.map(pt), closed: ids.length > 3 && ids[0] === ids[ids.length - 1] });
     }
-    return out;
-  }
-
-  // full marks within a quarter cell, nothing beyond 0.9 cells
-  function closeness(d) { return Math.max(0, Math.min(1, 1 - (d - 0.25) / 0.65)); }
-
-  // Where linear interpolation between two neighbouring stations, one below
-  // and one above X, puts the X isobar. Each station is paired with its
-  // nearest partners on the other side; close pairs pin the line down more
-  // firmly than distant ones and weigh more.
-  function interpTargets(X) {
-    var lo = [], hi = [], n;
-    for (n = 0; n < S.vals.length; n++) if (S.station[n]) {
-      var st = { n: n, x: n % S.W, y: Math.floor(n / S.W), v: S.vals[n] };
-      (st.v < X ? lo : hi).push(st);
-    }
-    var pairs = new Map();
-    function link(from, others, radius) {
-      from.forEach(function (a) {
-        others.map(function (b) { return { b: b, d: dist(a, b) }; })
-          .filter(function (o) { return o.d <= radius; })
-          .sort(function (u, v) { return u.d - v.d; })
-          .slice(0, 3)
-          .forEach(function (o) {
-            var l = a.v < X ? a : o.b, h = a.v < X ? o.b : a;
-            pairs.set(l.n + '_' + h.n, { l: l, h: h, d: o.d });
-          });
-      });
-    }
-    link(lo, hi, 2.3); link(hi, lo, 2.3);
-    if (pairs.size < 2) { link(lo, hi, 4); link(hi, lo, 4); }
-    var out = [];
-    pairs.forEach(function (pr) {
-      var t = (X - pr.l.v) / (pr.h.v - pr.l.v);
-      var q = { x: pr.l.x + (pr.h.x - pr.l.x) * t, y: pr.l.y + (pr.h.y - pr.l.y) * t, w: 1 / pr.d };
-      // points from overlapping pairs that land together count as one, weights summed
-      var twin = out.filter(function (o) { return dist(o, q) < 0.2; })[0];
-      if (twin) { twin.x = (twin.x * twin.w + q.x * q.w) / (twin.w + q.w); twin.y = (twin.y * twin.w + q.y * q.w) / (twin.w + q.w); twin.w += q.w; }
-      else out.push(q);
-    });
-    return out;
+    return (S.refCache[X] = out);
   }
 
   function evaluate() {
-    var N = S.vals.length, res = { levels: [], targets: [], wrong: new Set(), open: S.open.slice(), crossings: S.crossings.slice() };
-    var pairsTot = 0, pairsSep = 0, intW = 0, intAcc = 0;
+    var N = S.vals.length, res = { levels: [], wrong: new Set(), open: S.open.slice(), crossings: S.crossings.slice() };
+    var pairsTot = 0, pairsSep = 0;
     S.levels.forEach(function (X) {
       var region = regionLabels(X), comp = {}, below = 0, above = 0, i;
       for (i = 0; i < N; i++) if (S.station[i]) {
@@ -1123,39 +1119,33 @@
       var tot = below * above;
       pairsTot += tot; pairsSep += tot - bad;
 
-      // interpolation: does the line pass where linear interpolation
-      // between neighbouring stations puts it? Visible data only.
       var mine = S.lines.filter(function (L) { return L.lvl === X; });
-      interpTargets(X).forEach(function (t) {
-        var d = Infinity;
-        mine.forEach(function (L) { d = Math.min(d, distPtLine(t, L.pts)); });
-        var c = closeness(d);
-        intW += t.w; intAcc += t.w * c;
-        res.targets.push({ x: t.x, y: t.y, lvl: X, hit: c >= 0.75 });
-      });
-
       res.levels.push({ X: X, drawn: mine.length > 0, sep: tot ? 1 - bad / tot : 1, wrong: wrongHere.length, below: below, above: above });
     });
     res.sep = pairsTot ? pairsSep / pairsTot : 0;
-    res.interp = intW ? intAcc / intW : 0;
 
-    // smoothness: turning angle along every line, sampled every 0.2 cells;
-    // gentle bends are free, sharp kinks cost
-    var nTurn = 0, pen = 0;
+    // smoothness: sample every line every 0.2 cells and add up how much
+    // the bending changes from one step to the next. Real isobars bend
+    // steadily, so a round ring or a wide even arc adds almost nothing,
+    // while a wobble, a zigzag or a kink adds a lot. Per cell of line length,
+    // 20 degrees of such change cost about a quarter of this criterion.
+    var change = 0, length = 0;
     S.lines.forEach(function (L) {
       var q = resample(L.pts, 0.2);
-      if (L.closed && q.length > 3) q = q.concat([q[1]]);
+      if (L.closed && q.length > 4) q = q.slice(0, -1).concat(q.slice(1, 3));
+      length += pathLength(L.pts);
+      var prev = null;
       for (var i = 1; i < q.length - 1; i++) {
         var v1x = q[i].x - q[i - 1].x, v1y = q[i].y - q[i - 1].y, v2x = q[i + 1].x - q[i].x, v2y = q[i + 1].y - q[i].y;
-        var l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
-        if (l1 < 0.05 || l2 < 0.05) continue;
-        var ang = Math.acos(Math.max(-1, Math.min(1, (v1x * v2x + v1y * v2y) / l1 / l2))) * 180 / Math.PI;
-        nTurn++; pen += Math.pow(Math.min(1, Math.max(0, ang - 20) / 50), 2);
+        if (Math.hypot(v1x, v1y) < 0.05 || Math.hypot(v2x, v2y) < 0.05) continue;
+        var th = Math.atan2(v1x * v2y - v1y * v2x, v1x * v2x + v1y * v2y) * 180 / Math.PI;
+        if (prev !== null) change += Math.max(0, Math.abs(th - prev) - 2);
+        prev = th;
       }
     });
-    res.smooth = S.lines.length === 0 ? 0 : nTurn ? 1 - pen / nTurn : 1;
+    res.smooth = S.lines.length === 0 || length === 0 ? 0 : Math.exp(-change / length / 70);
 
-    var pts = 60 * res.sep + 25 * res.interp + 15 * res.smooth;
+    var pts = 75 * res.sep + 25 * res.smooth;
     pts -= 10 * res.open.length + 15 * res.crossings.length;
     if (S.hintUsed && !mode().hint) pts -= 10;
     if (S.lines.length === 0) pts = 0;
@@ -1330,7 +1320,9 @@
       all.forEach(function (X) {
         ctx.strokeStyle = levelColor(X);
         ctx.beginPath();
-        referenceSegs(X).forEach(function (sg) { ctx.moveTo(px(sg[0].x), py(sg[0].y)); ctx.lineTo(px(sg[1].x), py(sg[1].y)); });
+        referenceLines(X).forEach(function (L) {
+          L.pts.forEach(function (q, k) { if (k) ctx.lineTo(px(q.x), py(q.y)); else ctx.moveTo(px(q.x), py(q.y)); });
+        });
         ctx.stroke();
       });
       ctx.restore();
@@ -1369,39 +1361,6 @@
       } else {
         ctx.beginPath(); ctx.arc(x, y, Math.max(1.6, u * 0.04), 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(17,17,17,.35)'; ctx.fill();
-      }
-    }
-
-    // interpolation targets after checking: green where the line passes, red where it misses
-    if (S.showPts && S.result) {
-      S.result.targets.forEach(function (t) {
-        var x = px(t.x), y = py(t.y), r = Math.max(3.5, u * 0.08);
-        ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
-        ctx.fillStyle = t.hit ? '#00954f' : '#df2a1e'; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
-      });
-    }
-
-    // highs and lows of the true field
-    if (S.showRef) {
-      for (var e = 0; e < S.vals.length; e++) {
-        var ei = e % S.W, ej = Math.floor(e / S.W), ev = S.vals[e], isMax = true, isMin = true;
-        if (ei === 0 || ej === 0 || ei === S.W - 1 || ej === S.H - 1) continue;
-        for (var dj = -1; dj <= 1; dj++) for (var di = -1; di <= 1; di++) {
-          if (!di && !dj) continue;
-          var nv = S.vals[e + dj * S.W + di];
-          if (nv >= ev) isMax = false;
-          if (nv <= ev) isMin = false;
-        }
-        if ((isMax && ev > 1015) || (isMin && ev < 1011)) {
-          ctx.font = '900 ' + Math.round(u * 0.62) + 'px Archivo, sans-serif';
-          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff';
-          var lx = px(ei), ly = py(ej) - u * 0.5;
-          ctx.strokeText(isMax ? 'H' : 'T', lx, ly);
-          ctx.fillStyle = isMax ? '#28348f' : '#df2a1e';
-          ctx.fillText(isMax ? 'H' : 'T', lx, ly);
-        }
       }
     }
 
@@ -1451,7 +1410,7 @@
   }
 
   function edited() {
-    if (S.result) { S.result = null; S.showRef = false; S.showPts = false; document.getElementById('result').hidden = true; renderLevels(); }
+    if (S.result) { S.result = null; S.showRef = false; document.getElementById('result').hidden = true; renderLevels(); }
   }
 
   function eraseAt(p) {
@@ -1460,22 +1419,51 @@
     return changed;
   }
 
-  var touches = new Map(), pinch = null, pan = null, gestureHold = false;
+  // One finger draws. Two fingers move: they pan the zoomed map, and
+  // whatever the map cannot take (all of it at full view) scrolls the page.
+  // Only a clear spreading or pinching of the fingers switches to zooming.
+  var touches = new Map(), gest = null, pan = null, gestureHold = false, gestRaf = 0;
   function capture(ev) { try { canvas.setPointerCapture(ev.pointerId); } catch (e) {} }
   function stageXY(ev) { var r = canvas.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
-  function pinchState() {
+  function twoFingers() {
     var pts = Array.from(touches.values()).slice(0, 2);
     return { c: { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }, d: Math.max(10, dist(pts[0], pts[1])) };
+  }
+  function gestureFrame() {
+    gestRaf = 0;
+    if (!gest || touches.size < 2) return;
+    var st = twoFingers();
+    if (!gest.mode) {
+      if (Math.abs(Math.log(st.d / gest.d0)) > 0.22) gest.mode = 'zoom';
+      else if (dist(st.c, gest.c0) > 8) gest.mode = 'pan';
+    }
+    if (gest.mode === 'pan') {
+      var dx = st.c.x - gest.last.x, dy = st.c.y - gest.last.y, ty0 = G.ty;
+      G.tx += dx; G.ty += dy;
+      applyView();
+      var rest = dy - (G.ty - ty0);
+      if (Math.abs(rest) > 0.01) window.scrollBy(0, -rest);
+      draw();
+    } else if (gest.mode === 'zoom') {
+      var r = canvas.getBoundingClientRect(), cx = st.c.x - r.left, cy = st.c.y - r.top;
+      if (!gest.anchor) gest.anchor = { bx: (cx - G.tx) / G.z, by: (cy - G.ty) / G.z, z0: G.z, d0: st.d };
+      G.z = Math.max(1, Math.min(ZMAX, gest.anchor.z0 * st.d / gest.anchor.d0));
+      G.tx = cx - gest.anchor.bx * G.z; G.ty = cy - gest.anchor.by * G.z;
+      applyView(); draw();
+    }
+    gest.last = st.c;
   }
 
   canvas.addEventListener('pointerdown', function (ev) {
     ev.preventDefault();
-    if (ev.pointerType !== 'mouse') touches.set(ev.pointerId, stageXY(ev));
-    // two fingers: zoom and pan; the stroke the first finger began is dropped
+    // touches are tracked in viewport coordinates, which stay put when the page scrolls
+    if (ev.pointerType !== 'mouse') touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    // a second finger turns the touch into a move/zoom gesture; the stroke
+    // the first finger had begun is dropped
     if (touches.size === 2) {
       if (drag) { restore(drag.before); drag = null; }
-      var st = pinchState();
-      pinch = { c0: st.c, d0: st.d, z0: G.z, tx0: G.tx, ty0: G.ty };
+      var st = twoFingers();
+      gest = { c0: st.c, d0: st.d, last: st.c, mode: null, anchor: null };
       gestureHold = true;
       draw(); return;
     }
@@ -1509,14 +1497,10 @@
   });
 
   canvas.addEventListener('pointermove', function (ev) {
-    if (touches.has(ev.pointerId)) touches.set(ev.pointerId, stageXY(ev));
-    if (pinch) {
-      if (touches.size >= 2) {
-        var st = pinchState(), bx = (pinch.c0.x - pinch.tx0) / pinch.z0, by = (pinch.c0.y - pinch.ty0) / pinch.z0;
-        G.z = Math.max(1, Math.min(ZMAX, pinch.z0 * st.d / pinch.d0));
-        G.tx = st.c.x - bx * G.z; G.ty = st.c.y - by * G.z;
-        applyView(); draw();
-      }
+    if (touches.has(ev.pointerId)) touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (gest) {
+      // both fingers report separately; handle them together once per frame
+      if (!gestRaf) gestRaf = requestAnimationFrame(gestureFrame);
       return;
     }
     if (pan && pan.id === ev.pointerId) {
@@ -1573,7 +1557,7 @@
   }
   function pointerEnd(ev) {
     touches.delete(ev.pointerId);
-    if (pinch && touches.size < 2) pinch = null;
+    if (gest && touches.size < 2) gest = null;
     if (touches.size === 0) gestureHold = false;
     if (pan && pan.id === ev.pointerId) { pan = null; return; }
     endDrag(ev);
@@ -1582,6 +1566,7 @@
   canvas.addEventListener('pointercancel', pointerEnd);
   canvas.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
   canvas.addEventListener('wheel', function (ev) {
+    if (!ev.ctrlKey && !ev.metaKey) return; // plain wheel scrolls the page as usual
     ev.preventDefault();
     var q = stageXY(ev);
     zoomAt(q.x, q.y, Math.exp(-ev.deltaY * 0.0015));
@@ -1639,7 +1624,7 @@
     var txt = '', cls = '';
     if (flashMsg) { txt = flashMsg; cls = 'warn'; }
     else if (S.locked && S.timeLeft <= 0 && mode().time) { txt = 'Zeit abgelaufen!'; cls = 'warn'; }
-    else if (S.result) { txt = S.result.valid && S.result.score >= 90 ? 'Stark! Das ist eine echte Wetterkarte.' : S.result.wrong.size ? 'Rote Ringe: Stationen auf der falschen Seite' : 'Rauten: gr\u00fcn getroffen, rot verfehlt'; cls = S.result.valid && S.result.score >= 90 ? 'good' : ''; }
+    else if (S.result) { txt = S.result.valid && S.result.score >= 90 ? 'Stark! Das ist eine echte Wetterkarte.' : S.result.wrong.size ? 'Rote Ringe: Stationen auf der falschen Seite' : 'Tipp: \u201eWahres Feld\u201c zeigt die Musterl\u00f6sung'; cls = S.result.valid && S.result.score >= 90 ? 'good' : ''; }
     else if (S.crossings.length) { txt = 'Rotes ✕: Isobaren kreuzen sich nie'; cls = 'warn'; }
     else if (mode().id === 'tutorial') {
       var X = S.active;
@@ -1665,12 +1650,6 @@
     var bad = S.open.length + S.crossings.length;
     $('ro-open').textContent = S.open.length + (S.crossings.length ? ' · ' + S.crossings.length + '✕' : '');
     $('ro-open').className = bad ? 'low' : '';
-    var t = $('ro-time');
-    if (mode().time) {
-      var m = Math.floor(Math.max(0, S.timeLeft) / 60), sec = Math.max(0, S.timeLeft) % 60;
-      t.textContent = m + ':' + (sec < 10 ? '0' : '') + sec;
-      t.className = S.timeLeft <= 20 ? 'low' : '';
-    } else { t.textContent = '∞'; t.className = ''; }
     $('btn-undo').disabled = !S.undo.length || S.locked;
     $('tool-clear').disabled = !S.lines.length || S.locked;
     var hintBtn = $('tool-hint');
@@ -1688,7 +1667,9 @@
     txt += m.europe
       ? '<b>Ma\u00dfstab:</b> 1 K\u00e4stchen \u2248 390 km (bei 50\u00b0 N), Karte 26\u00b0 W\u201340\u00b0 O, 35\u201370\u00b0 N'
       : '<b>Ma\u00dfstab:</b> \u00dcbungsfeld ohne geografischen Ma\u00dfstab';
-    txt += ' \u00b7 Zoomen: zwei Finger, Mausrad oder +/\u2212' + (matchMedia('(pointer: fine)').matches ? ', verschieben mit rechter Maustaste' : '');
+    txt += matchMedia('(pointer: coarse)').matches
+      ? ' \u00b7 <b>Ein Finger zeichnet, zwei Finger scrollen</b> bzw. verschieben die Karte; auseinanderziehen zoomt'
+      : ' \u00b7 Zoomen: Strg + Mausrad oder +/\u2212, verschieben mit rechter Maustaste';
     document.getElementById('map-note').innerHTML = txt;
   }
 
@@ -1718,7 +1699,7 @@
   function newMap(reseed) {
     if (reseed) S.seed = hash32(S.seed, Date.now() & 0x7fffffff);
     generate();
-    S.lines = []; S.undo = []; S.result = null; S.showRef = false; S.showPts = false;
+    S.lines = []; S.undo = []; S.result = null; S.showRef = false;
     S.hintOn = false; S.hintUsed = false; S.locked = false; S.tool = 'pen';
     S.active = S.levels[0];
     resetView();
@@ -1744,7 +1725,7 @@
     $('res-verdict').textContent = r.crossings.length ? 'Ung\u00fcltig: Kreuzung' : tier === 3 ? 'Wetterdienst-reif' :
       r.score >= 70 && r.wrong.size ? 'Fast \u2014 ' + r.wrong.size + ' Station' + (r.wrong.size === 1 ? '' : 'en') + ' falsch' :
       r.score >= 70 ? 'Gute Analyse' : r.score >= 40 ? 'Auf dem Weg' : 'Nochmal hinschauen';
-    [['sep', r.sep], ['int', r.interp], ['smooth', r.smooth]].forEach(function (x) {
+    [['sep', r.sep], ['smooth', r.smooth]].forEach(function (x) {
       $('res-' + x[0]).textContent = Math.round(x[1] * 100) + ' %';
       $('bar-' + x[0]).style.width = Math.round(x[1] * 100) + '%';
     });
@@ -1767,7 +1748,6 @@
       li.appendChild(lv); li.appendChild(tx); ul.appendChild(li);
     });
     $('btn-ref').classList.remove('on');
-    S.showPts = true; $('btn-pts').classList.add('on');
     $('btn-retry').textContent = S.locked ? 'Neue Karte' : 'Weiterzeichnen';
     $('result').hidden = false;
     renderLevels(); updateStatus(); draw();
@@ -1795,11 +1775,6 @@
   $('btn-ref').addEventListener('click', function () {
     S.showRef = !S.showRef;
     this.classList.toggle('on', S.showRef);
-    draw();
-  });
-  $('btn-pts').addEventListener('click', function () {
-    S.showPts = !S.showPts;
-    this.classList.toggle('on', S.showPts);
     draw();
   });
   $('btn-retry').addEventListener('click', function () {
@@ -1844,7 +1819,8 @@
       S.levels.forEach(function (X) { S.lines = S.lines.concat(referenceLines(X)); });
       recompute(); edited(); updateStatus(); draw();
     },
-    evaluate: evaluate, recompute: recompute
+    evaluate: evaluate, recompute: recompute,
+    view: function () { return { z: +G.z.toFixed(2), tx: Math.round(G.tx), ty: Math.round(G.ty) }; }
   };
 
   S.seed = Date.now() >>> 0;
