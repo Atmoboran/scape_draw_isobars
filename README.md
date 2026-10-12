@@ -157,13 +157,17 @@ are kept in `localStorage`.
 ## Tech
 
 - One self-contained `index.html`: canvas + plain JavaScript, no build step,
-  no server, no dependencies beyond a Google Fonts stylesheet.
+  no server, no external dependencies (no web fonts from the internet).
 - State is a list of polylines (points plus level plus closed flag), not a
   pixel mask; the raster only exists for the moment of scoring. Undo stores
   snapshots of that list.
-- Design: SCAPE° corporate design (Archivo, thick ink borders, poster-hero
-  layout), mobile-first and optimised for touch, with a desktop view that is
-  auto-detected and can be toggled by hand.
+- Design: SCAPE° corporate design, kept apart from the app in `theme/`
+  (`theme.css`: font, palette, roles, wordmark; `theme.js`: brand texts and
+  every map colour, including the fixed colour per isobar level). To ship
+  the game in another design, edit `theme/` only — see `theme/README.md`.
+- Layout: mobile-first. The desktop view puts the map on the left, sized so
+  the whole map stays on screen, with intro, mode, level chips, tools and
+  the check button in a column to its right.
 - `window.__isodraw` exposes the state, the evaluator and `solve()` (fills
   the board with the true-field isobars) for automated checks.
 

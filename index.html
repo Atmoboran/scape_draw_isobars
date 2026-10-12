@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-<title>SCAPE&deg; &mdash; Isobaren zeichnen</title>
-<meta name="description" content="Ein Isobaren-Spiel im Browser: Messstationen mit Luftdruckwerten, und du zeichnest die Linien gleichen Drucks ein &mdash; ein SCAPE&deg;-Projekt uber Wetterkarten." />
-<meta name="theme-color" content="#f2e2c0" />
+<title>Isobaren zeichnen</title>
+<meta name="description" content="Ein Isobaren-Spiel im Browser: Messstationen mit Luftdruckwerten, und du zeichnest die Linien gleichen Drucks ein &mdash; &uuml;ber Wetterkarten." />
 <script>
   (function () {
     var mode;
@@ -19,42 +18,19 @@
     document.documentElement.setAttribute("data-view", mode);
   })();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme/theme.css">
 <style>
-  :root{
-    --ink:#111111;
-    --paper:#ffffff;
-
-    /* SCAPE&deg; palette, sampled from the corporate identity guide */
-    --olive:#6b6b23;
-    --mustard:#d2a716;
-    --orange:#ef8f2c;
-    --rust:#c65a2a;
-    --red:#df2a1e;
-    --purple:#4a2e83;
-    --green:#00954f;
-    --cyan:#1093c4;
-    --navy:#28348f;
-
-    --cream:#f2e2c0;
-    --pastel-yellow:#f6ea79;
-    --bright-yellow:#ffe400;
-    --pastel-blue:#cfe6f6;
-    --pastel-lavender:#dcd6f2;
-    --pastel-red:#f7cfc0;
-    --mint:#4ab48a;
-  }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{
     margin:0; padding:0; min-height:100%;
     background:var(--paper);
     color:var(--ink);
-    font-family:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    font-family:var(--font);
     overscroll-behavior-y:none;
   }
   h1,h2,h3{font-family:inherit;}
+  b,strong{font-weight:var(--fw-medium);}
+  :focus-visible{outline:3px solid var(--focus); outline-offset:2px;}
   img,svg{max-width:100%;}
 
   .wrap{ max-width:600px; margin:0 auto; }
@@ -64,16 +40,9 @@
     display:flex; align-items:flex-end; justify-content:space-between;
     padding:22px 20px 14px;
   }
-  .wordmark .word{
-    display:block; font-size:26px; font-weight:800; letter-spacing:-.01em; line-height:1;
-  }
-  .wordmark .sub{
-    display:block; margin-top:4px; font-size:10px; font-weight:700;
-    letter-spacing:.14em; text-transform:uppercase;
-  }
   #view-toggle{
     border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:9.5px; letter-spacing:.05em;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:11px; letter-spacing:.05em;
     text-transform:uppercase; padding:5px 8px; cursor:pointer; white-space:nowrap;
   }
   #view-toggle:active{ background:var(--ink); color:var(--paper); }
@@ -91,10 +60,10 @@
     grid-template-columns:repeat(10,1fr);
     grid-template-rows:1fr 1fr;
   }
-  .q-blue{ grid-column:1/6; grid-row:1/2; background:var(--cyan); }
-  .q-yellow{ grid-column:6/11; grid-row:1/2; background:var(--pastel-yellow); }
-  .q-cream{ grid-column:1/8; grid-row:2/3; background:var(--cream); }
-  .q-navy{ grid-column:8/11; grid-row:2/3; background:var(--navy); }
+  .q-blue{ grid-column:1/6; grid-row:1/2; background:var(--field-2); }
+  .q-yellow{ grid-column:6/11; grid-row:1/2; background:var(--field-1); }
+  .q-cream{ grid-column:1/8; grid-row:2/3; background:var(--field-3); }
+  .q-navy{ grid-column:8/11; grid-row:2/3; background:var(--field-4); }
 
   .arch{
     position:absolute; right:4%; top:6%;
@@ -109,11 +78,11 @@
     max-width:74%;
   }
   .poster-title{
-    margin:0 0 6px; font-weight:900; text-transform:uppercase;
+    margin:0 0 6px; font-weight:var(--fw-light); text-transform:uppercase;
     font-size:clamp(20px,7vw,30px); line-height:.98; letter-spacing:-.01em;
   }
   .poster-tagline{
-    margin:0; font-size:10px; font-weight:700; letter-spacing:.02em;
+    margin:0; font-size:11px; font-weight:var(--fw-medium); letter-spacing:.02em;
     line-height:1.35; text-transform:uppercase;
   }
 
@@ -123,35 +92,35 @@
   .mode-row{ display:flex; gap:6px; margin:0 0 12px; }
   .mode-btn{
     flex:1; min-width:0; border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:10.5px; text-transform:uppercase;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:11.5px; text-transform:uppercase;
     letter-spacing:.02em; padding:9px 2px; cursor:pointer; text-align:center; line-height:1.15;
     overflow-wrap:break-word;
   }
   .mode-btn.active{ background:var(--ink); color:var(--paper); }
-  .mode-btn .best{ display:block; font-size:9px; font-weight:700; opacity:.7; margin-top:2px; text-transform:none; }
+  .mode-btn .best{ display:block; font-size:11px; font-weight:var(--fw-medium); opacity:.7; margin-top:2px; text-transform:none; }
 
   .preset-row{ display:flex; align-items:center; gap:6px; margin:0 0 12px; }
   .preset-row[hidden]{ display:none; }
   .preset-row button{
     flex:none; width:28px; height:28px; border:2px solid var(--ink);
     background:var(--paper); color:var(--ink); font-family:inherit;
-    font-weight:800; font-size:13px; line-height:1; cursor:pointer; padding:0;
+    font-weight:var(--fw-medium); font-size:13px; line-height:1; cursor:pointer; padding:0;
   }
   .preset-row button:active{ background:var(--ink); color:var(--paper); }
   .preset-name{ flex:1; min-width:0; }
-  .preset-name b{ display:block; font-size:13px; font-weight:800; }
-  .preset-name span{ display:block; font-size:11px; font-weight:600; line-height:1.35; opacity:.8; }
+  .preset-name b{ display:block; font-size:13px; font-weight:var(--fw-medium); }
+  .preset-name span{ display:block; font-size:11px; font-weight:var(--fw-medium); line-height:1.35; opacity:.8; }
 
   /* ============ LEVEL CHIPS ============ */
   .level-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; }
   .level-label{
-    font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    font-size:11px; font-weight:var(--fw-medium); letter-spacing:.06em; text-transform:uppercase;
     opacity:.7; margin-right:2px;
   }
   .level-chip{
     position:relative;
     border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:12px; font-variant-numeric:tabular-nums;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:12px; font-variant-numeric:tabular-nums;
     padding:6px 8px 6px 20px; cursor:pointer; line-height:1;
   }
   .level-chip::before{
@@ -165,7 +134,7 @@
   .stage-card{
     margin:0 0 10px;
     border:2px solid var(--ink);
-    background:var(--cream);
+    background:var(--c-cream);
     position:relative;
     overflow:hidden;
   }
@@ -183,7 +152,7 @@
   .stage-hint-badge{
     position:absolute; top:8px; left:8px; right:8px; z-index:3;
     background:var(--paper); border:2px solid var(--ink);
-    font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    font-size:11px; font-weight:var(--fw-medium); letter-spacing:.03em; text-transform:uppercase;
     padding:6px 8px;
     pointer-events:none;
     text-align:center;
@@ -191,16 +160,16 @@
   }
   .stage-hint-badge[hidden]{ display:none; }
   .stage-hint-badge.warn{ background:var(--pastel-red); }
-  .stage-hint-badge.good{ background:var(--bright-yellow); }
+  .stage-hint-badge.good{ background:var(--c-yellow-bright); }
 
   /* ============ MAP NOTE + ZOOM ============ */
   .map-foot{ display:flex; align-items:flex-start; gap:10px; margin:-2px 0 12px; }
-  .map-note{ flex:1; min-width:0; margin:0; font-size:10.5px; font-weight:600; line-height:1.45; opacity:.8; }
-  .map-note b{ font-weight:800; }
+  .map-note{ flex:1; min-width:0; margin:0; font-size:11.5px; font-weight:var(--fw-medium); line-height:1.45; opacity:.8; }
+  .map-note b{ font-weight:var(--fw-medium); }
   .zoom-ctl{ flex:none; display:flex; gap:4px; }
   .zoom-ctl button{
     width:30px; height:30px; border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:15px; line-height:1; cursor:pointer; padding:0;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:15px; line-height:1; cursor:pointer; padding:0;
   }
   .zoom-ctl button:active{ background:var(--ink); color:var(--paper); }
   .zoom-ctl button:disabled{ opacity:.35; cursor:default; }
@@ -209,7 +178,7 @@
   .tool-row{ display:flex; gap:6px; margin:0 0 14px; }
   .tool-btn{
     flex:1; min-width:0; border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:10.5px; text-transform:uppercase;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:11.5px; text-transform:uppercase;
     letter-spacing:.02em; padding:9px 2px; cursor:pointer; text-align:center; line-height:1.15;
   }
   .tool-btn:active{ background:var(--ink); color:var(--paper); }
@@ -223,24 +192,24 @@
   }
   .readout > div{
     flex:1 1 0; min-width:0; overflow-wrap:break-word;
-    font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    font-size:11px; font-weight:var(--fw-medium); letter-spacing:.06em; text-transform:uppercase;
     line-height:1.25;
   }
-  .readout b{ display:block; font-size:15px; font-weight:700; letter-spacing:0; margin-top:3px; text-transform:none; font-variant-numeric:tabular-nums; }
-  .readout b.low{ color:var(--red); }
+  .readout b{ display:block; font-size:15px; font-weight:var(--fw-medium); letter-spacing:0; margin-top:3px; text-transform:none; font-variant-numeric:tabular-nums; }
+  .readout b.low{ color:var(--c-red); }
 
   /* ============ CTA ============ */
   .btn-row{ display:flex; gap:10px; margin-bottom:10px; }
   .btn-row button{
     display:flex; align-items:center; justify-content:center; gap:8px;
     width:100%;
-    font-family:inherit; font-weight:800; font-size:13.5px; text-transform:uppercase; letter-spacing:.02em;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:13.5px; text-transform:uppercase; letter-spacing:.02em;
     padding:14px 8px; cursor:pointer;
     border:2px solid var(--ink);
     background:var(--paper); color:var(--ink);
   }
   .btn-row button:active{ opacity:.85; }
-  #btn-check{ background:var(--bright-yellow); flex:1.5; }
+  #btn-check{ background:var(--c-yellow-bright); flex:1.5; }
   #btn-undo{ flex:1; }
   #btn-new{ flex:1; }
   .btn-row button:disabled{ opacity:.4; cursor:default; }
@@ -253,35 +222,35 @@
   .result[hidden]{ display:none; }
   .result-head{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:12px 14px; background:var(--pastel-yellow); border-bottom:2px solid var(--ink);
+    padding:12px 14px; background:var(--c-yellow-pastel); border-bottom:2px solid var(--ink);
   }
-  .result-score{ font-size:30px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; }
-  .result-score small{ font-size:13px; font-weight:800; opacity:.6; }
+  .result-score{ font-size:30px; font-weight:var(--fw-medium); line-height:1; font-variant-numeric:tabular-nums; }
+  .result-score small{ font-size:13px; font-weight:var(--fw-medium); opacity:.6; }
   .result-stars{ font-size:22px; letter-spacing:2px; }
-  .result-verdict{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+  .result-verdict{ font-size:12px; font-weight:var(--fw-medium); text-transform:uppercase; letter-spacing:.03em; }
   .result-body{ padding:12px 14px 14px; }
   .crit{ margin:0 0 10px; }
-  .crit-top{ display:flex; justify-content:space-between; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+  .crit-top{ display:flex; justify-content:space-between; font-size:11px; font-weight:var(--fw-medium); text-transform:uppercase; letter-spacing:.04em; }
   .crit-bar{ height:8px; border:2px solid var(--ink); margin-top:4px; background:var(--paper); }
   .crit-bar i{ display:block; height:100%; background:var(--ink); }
-  .crit-note{ font-size:11px; font-weight:600; opacity:.75; margin-top:3px; line-height:1.4; }
+  .crit-note{ font-size:11px; font-weight:var(--fw-medium); opacity:.75; margin-top:3px; line-height:1.4; }
   .level-report{ list-style:none; margin:12px 0 0; padding:10px 0 0; border-top:2px solid var(--ink); }
   .level-report li{ display:flex; gap:8px; align-items:baseline; font-size:12.5px; line-height:1.45; margin-bottom:5px; }
-  .level-report .lv{ flex:none; font-weight:800; font-variant-numeric:tabular-nums; min-width:68px; }
-  .level-report .ok{ color:var(--green); font-weight:800; }
-  .level-report .bad{ color:var(--red); font-weight:800; }
-  .penalties{ font-size:12px; font-weight:700; margin-top:8px; color:var(--red); }
+  .level-report .lv{ flex:none; font-weight:var(--fw-medium); font-variant-numeric:tabular-nums; min-width:68px; }
+  .level-report .ok{ color:var(--c-green-strong); font-weight:var(--fw-medium); }
+  .level-report .bad{ color:var(--c-red); font-weight:var(--fw-medium); }
+  .penalties{ font-size:12px; font-weight:var(--fw-medium); margin-top:8px; color:var(--c-red); }
   .penalties:empty{ display:none; }
   .result-actions{ display:flex; gap:8px; margin-top:12px; }
   .result-actions button{
     flex:1; border:2px solid var(--ink); background:var(--paper); color:var(--ink);
-    font-family:inherit; font-weight:800; font-size:11px; text-transform:uppercase;
+    font-family:inherit; font-weight:var(--fw-medium); font-size:11px; text-transform:uppercase;
     letter-spacing:.02em; padding:10px 6px; cursor:pointer;
   }
   .result-actions button.on{ background:var(--ink); color:var(--paper); }
 
   .hint{
-    margin:4px 0 18px; font-size:11.5px; font-weight:500; color:var(--ink); text-align:center; line-height:1.5;
+    margin:4px 0 18px; font-size:11.5px; font-weight:var(--fw-medium); color:var(--ink); text-align:center; line-height:1.5;
   }
 
   /* ============ EXPLAINER ============ */
@@ -292,17 +261,17 @@
     list-style:none; cursor:pointer;
     display:flex; align-items:center; gap:10px; justify-content:space-between;
     padding:14px 0;
-    font-size:14px; font-weight:800; letter-spacing:-.01em;
+    font-size:14px; font-weight:var(--fw-medium); letter-spacing:-.01em;
   }
   details.topic > summary::-webkit-details-marker{ display:none; }
   details.topic > summary::after{
     content:"+";
     flex:none; width:22px; height:22px;
     border:2px solid var(--ink); border-radius:50%;
-    font-size:14px; font-weight:800; line-height:18px; text-align:center;
+    font-size:14px; font-weight:var(--fw-medium); line-height:18px; text-align:center;
   }
   details.topic[open] > summary::after{ content:"\2013"; background:var(--ink); color:var(--paper); }
-  details.topic > summary:focus-visible{ outline:2px solid var(--navy); outline-offset:2px; }
+  details.topic > summary:focus-visible{ outline:2px solid var(--c-navy); outline-offset:2px; }
   .topic-body{ padding:0 0 6px; }
   p.blurb{ margin:0 0 14px; font-size:14.5px; line-height:1.6; color:var(--ink); }
   .intro-blurb{ margin:0 0 18px; }
@@ -311,24 +280,34 @@
   /* ============ FOOTER ============ */
   .brand-footer{
     padding:26px 20px 34px; border-top:2px solid var(--ink);
-    font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; line-height:1.6;
+    font-size:11px; font-weight:var(--fw-medium); letter-spacing:.04em; text-transform:uppercase; line-height:1.6;
   }
 
   /* ============ DESKTOP VIEW ============ */
-  :root[data-view="desktop"] .wrap{ max-width:760px; }
-  :root[data-view="desktop"] .poster-title{ font-size:clamp(26px,5vw,38px); }
+  /* Handy (Basis): alles untereinander.
+     Desktop: die Karte links, so groß wie der Bildschirm erlaubt (siehe layout() im Skript);
+     Einleitung, Modus, Isobaren-Auswahl, Werkzeuge und Prüfen rechts daneben. */
+  .lab{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"setup" "stage" "run"; }
+  .lab-setup{ grid-area:setup; } .lab-stage{ grid-area:stage; } .lab-run{ grid-area:run; }
+
+  :root[data-view="desktop"] .wrap{ max-width:1280px; }
+  :root[data-view="desktop"] .topbar{ padding:22px 32px 14px; --logo-size:36px; }
+  :root[data-view="desktop"] .poster{ aspect-ratio:auto; height:140px; margin:0 32px 24px; }
+  :root[data-view="desktop"] .arch{ width:170px; right:4%; top:8%; }
+  :root[data-view="desktop"] .poster-copy{ max-width:72%; padding:0 24px 18px; }
+  :root[data-view="desktop"] .poster-title{ font-size:52px; }
+  :root[data-view="desktop"] .poster-tagline{ font-size:12px; }
+  :root[data-view="desktop"] main{ padding:0 32px 40px; }
+  :root[data-view="desktop"] .lab{
+    grid-template-columns:minmax(0,1fr) minmax(340px,400px);
+    grid-template-areas:"stage setup" "stage run";
+    grid-template-rows:auto 1fr; gap:0 40px; align-items:start;
+  }
+  :root[data-view="desktop"] .lab-stage .stage-card,
+  :root[data-view="desktop"] .lab-stage .map-foot{ margin-left:auto; margin-right:auto; }
+  :root[data-view="desktop"] .explainer{ max-width:820px; }
   :root[data-view="desktop"] details.topic > summary{ font-size:16px; }
   :root[data-view="desktop"] p.blurb{ font-size:15.5px; }
-  :root[data-view="desktop"] .stage-card{ max-width:520px; margin-left:auto; margin-right:auto; }
-  :root[data-view="desktop"] .mode-row,
-  :root[data-view="desktop"] .preset-row,
-  :root[data-view="desktop"] .level-row,
-  :root[data-view="desktop"] .tool-row,
-  :root[data-view="desktop"] .map-foot,
-  :root[data-view="desktop"] .readout,
-  :root[data-view="desktop"] .btn-row,
-  :root[data-view="desktop"] .result,
-  :root[data-view="desktop"] .hint{ max-width:520px; margin-left:auto; margin-right:auto; }
   :root[data-view="desktop"] .btn-row button:hover:not(:disabled),
   :root[data-view="desktop"] .tool-btn:hover:not(:disabled),
   :root[data-view="desktop"] .mode-btn:hover{ opacity:.85; }
@@ -338,10 +317,7 @@
 
 <div class="wrap">
   <header class="topbar">
-    <div class="wordmark">
-      <span class="word">SCAPE&deg;</span>
-      <span class="sub">Wetter, Klima, Mensch</span>
-    </div>
+    <span class="logo" data-brand="logo"></span>
     <div class="topbar-right">
       <button id="view-toggle" type="button"></button>
     </div>
@@ -359,7 +335,7 @@
         <ellipse cx="170" cy="110" rx="30" ry="22" fill="none" stroke="currentColor" stroke-width="5"/>
         <ellipse cx="165" cy="108" rx="70" ry="50" fill="none" stroke="currentColor" stroke-width="5"/>
         <path d="M40,20 C80,40 60,110 90,160 C115,200 190,205 280,190" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-        <text x="158" y="118" font-family="Archivo, sans-serif" font-weight="900" font-size="30" fill="currentColor">T</text>
+        <text x="158" y="118" font-family="Helvetica Neue,Arial,sans-serif" font-weight="300" font-size="30" fill="currentColor">T</text>
       </svg>
     </div>
     <div class="poster-copy">
@@ -369,84 +345,90 @@
   </div>
 
   <main>
-    <div class="intro-blurb">
-      <p class="blurb">Auf dem Feld liegen Messstationen mit ihrem Luftdruck in Hektopascal. Zeichne die <b>Isobaren</b> ein: Linien gleichen Drucks, die alle Werte darunter von allen Werten dar&uuml;ber trennen. Eine Isobare endet nie mitten im Feld &mdash; sie l&auml;uft bis zum Rand oder schlie&szlig;t sich zum Ring.</p>
-    </div>
-
-    <div class="mode-row" id="mode-row"></div>
-
-    <div class="preset-row" id="preset-row" hidden>
-      <button type="button" id="preset-prev" aria-label="Vorige Wetterlage">&lsaquo;</button>
-      <div class="preset-name"><b id="preset-title"></b><span id="preset-desc"></span></div>
-      <button type="button" id="preset-next" aria-label="N&auml;chste Wetterlage">&rsaquo;</button>
-    </div>
-
-    <div class="level-row" id="level-row"></div>
-
-    <div class="stage-card">
-      <div class="stage" id="stage">
-        <canvas id="board"></canvas>
-        <div class="stage-hint-badge" id="badge" hidden></div>
+    <div class="lab">
+      <div class="lab-setup">
+      <div class="intro-blurb">
+        <p class="blurb">Auf dem Feld liegen Messstationen mit ihrem Luftdruck in Hektopascal. Zeichne die <b>Isobaren</b> ein: Linien gleichen Drucks, die alle Werte darunter von allen Werten dar&uuml;ber trennen. Eine Isobare endet nie mitten im Feld &mdash; sie l&auml;uft bis zum Rand oder schlie&szlig;t sich zum Ring.</p>
       </div>
-    </div>
 
-    <div class="map-foot">
-      <p class="map-note" id="map-note"></p>
-      <div class="zoom-ctl" role="group" aria-label="Zoom">
-        <button type="button" id="zoom-out" aria-label="Herauszoomen">&minus;</button>
-        <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
-        <button type="button" id="zoom-reset" aria-label="Ganze Karte zeigen">&#x2922;</button>
+      <div class="mode-row" id="mode-row"></div>
+
+      <div class="preset-row" id="preset-row" hidden>
+        <button type="button" id="preset-prev" aria-label="Vorige Wetterlage">&lsaquo;</button>
+        <div class="preset-name"><b id="preset-title"></b><span id="preset-desc"></span></div>
+        <button type="button" id="preset-next" aria-label="N&auml;chste Wetterlage">&rsaquo;</button>
       </div>
-    </div>
 
-    <div class="tool-row">
-      <button type="button" class="tool-btn on" id="tool-pen">Stift</button>
-      <button type="button" class="tool-btn" id="tool-eraser">Radierer</button>
-      <button type="button" class="tool-btn" id="tool-hint">Tipp</button>
-      <button type="button" class="tool-btn" id="tool-clear">Alles l&ouml;schen</button>
-    </div>
-
-    <div class="readout">
-      <div>Stationen<b id="ro-stations">&ndash;</b></div>
-      <div>Isobaren<b id="ro-levels">&ndash;</b></div>
-      <div>Offene Enden<b id="ro-open">0</b></div>
-    </div>
-
-    <div class="btn-row">
-      <button type="button" id="btn-check">Pr&uuml;fen</button>
-      <button type="button" id="btn-undo">Zur&uuml;ck</button>
-      <button type="button" id="btn-new">Neue Karte</button>
-    </div>
-
-    <section class="result" id="result" hidden aria-live="polite">
-      <div class="result-head">
-        <div>
-          <div class="result-score"><span id="res-score">0</span> <small>/ 100</small></div>
-          <div class="result-verdict" id="res-verdict"></div>
-        </div>
-        <div class="result-stars" id="res-stars"></div>
+      <div class="level-row" id="level-row"></div>
       </div>
-      <div class="result-body">
-        <div class="crit">
-          <div class="crit-top"><span>Trennung</span><span id="res-sep">0 %</span></div>
-          <div class="crit-bar"><i id="bar-sep"></i></div>
-          <div class="crit-note">Wie viele Stationspaare (eins unter, eins &uuml;ber der Isobare) deine Linien korrekt trennen. 75 Punkte.</div>
-        </div>
-        <div class="crit">
-          <div class="crit-top"><span>Glattheit</span><span id="res-smooth">0 %</span></div>
-          <div class="crit-bar"><i id="bar-smooth"></i></div>
-          <div class="crit-note">Echte Isobaren biegen sich gleichm&auml;&szlig;ig &mdash; Ringe und weite B&ouml;gen sind frei, aber jedes Wackeln, Zickzack oder ein Knick kostet. 25 Punkte.</div>
-        </div>
-        <div class="penalties" id="res-pen"></div>
-        <ul class="level-report" id="res-levels"></ul>
-        <div class="result-actions">
-          <button type="button" id="btn-ref">Wahres Feld</button>
-          <button type="button" id="btn-retry">Weiterzeichnen</button>
+      <div class="lab-stage">
+      <div class="stage-card">
+        <div class="stage" id="stage">
+          <canvas id="board"></canvas>
+          <div class="stage-hint-badge" id="badge" hidden></div>
         </div>
       </div>
-    </section>
 
-    <p class="hint" id="hint">Zeichne frei mit Finger oder Maus. Enden nahe am Rand rasten am Rand ein, ein Ende nahe am Anfang schlie&szlig;t den Ring. Setz an einem offenen Ende an, um weiterzuzeichnen &mdash; tippe eine Linie an, um sie zu l&ouml;schen. Zum Scrollen &uuml;ber die Karte: zwei Finger.</p>
+      <div class="map-foot">
+        <p class="map-note" id="map-note"></p>
+        <div class="zoom-ctl" role="group" aria-label="Zoom">
+          <button type="button" id="zoom-out" aria-label="Herauszoomen">&minus;</button>
+          <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+          <button type="button" id="zoom-reset" aria-label="Ganze Karte zeigen">&#x2922;</button>
+        </div>
+      </div>
+      </div>
+      <div class="lab-run">
+      <div class="tool-row">
+        <button type="button" class="tool-btn on" id="tool-pen">Stift</button>
+        <button type="button" class="tool-btn" id="tool-eraser">Radierer</button>
+        <button type="button" class="tool-btn" id="tool-hint">Tipp</button>
+        <button type="button" class="tool-btn" id="tool-clear">Alles l&ouml;schen</button>
+      </div>
+
+      <div class="readout">
+        <div>Stationen<b id="ro-stations">&ndash;</b></div>
+        <div>Isobaren<b id="ro-levels">&ndash;</b></div>
+        <div>Offene Enden<b id="ro-open">0</b></div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" id="btn-check">Pr&uuml;fen</button>
+        <button type="button" id="btn-undo">Zur&uuml;ck</button>
+        <button type="button" id="btn-new">Neue Karte</button>
+      </div>
+
+      <section class="result" id="result" hidden aria-live="polite">
+        <div class="result-head">
+          <div>
+            <div class="result-score"><span id="res-score">0</span> <small>/ 100</small></div>
+            <div class="result-verdict" id="res-verdict"></div>
+          </div>
+          <div class="result-stars" id="res-stars"></div>
+        </div>
+        <div class="result-body">
+          <div class="crit">
+            <div class="crit-top"><span>Trennung</span><span id="res-sep">0 %</span></div>
+            <div class="crit-bar"><i id="bar-sep"></i></div>
+            <div class="crit-note">Wie viele Stationspaare (eins unter, eins &uuml;ber der Isobare) deine Linien korrekt trennen. 75 Punkte.</div>
+          </div>
+          <div class="crit">
+            <div class="crit-top"><span>Glattheit</span><span id="res-smooth">0 %</span></div>
+            <div class="crit-bar"><i id="bar-smooth"></i></div>
+            <div class="crit-note">Echte Isobaren biegen sich gleichm&auml;&szlig;ig &mdash; Ringe und weite B&ouml;gen sind frei, aber jedes Wackeln, Zickzack oder ein Knick kostet. 25 Punkte.</div>
+          </div>
+          <div class="penalties" id="res-pen"></div>
+          <ul class="level-report" id="res-levels"></ul>
+          <div class="result-actions">
+            <button type="button" id="btn-ref">Wahres Feld</button>
+            <button type="button" id="btn-retry">Weiterzeichnen</button>
+          </div>
+        </div>
+      </section>
+
+      <p class="hint" id="hint">Zeichne frei mit Finger oder Maus. Enden nahe am Rand rasten am Rand ein, ein Ende nahe am Anfang schlie&szlig;t den Ring. Setz an einem offenen Ende an, um weiterzuzeichnen &mdash; tippe eine Linie an, um sie zu l&ouml;schen. Zum Scrollen &uuml;ber die Karte: zwei Finger.</p>
+      </div>
+    </div>
 
     <div class="explainer">
       <details class="topic">
@@ -491,10 +473,12 @@
   </main>
 
   <footer class="brand-footer">
-    Wetter, Klima, Wandel.<br>Wir erkl&auml;ren es. &mdash; SCAPE&deg;
+    <span data-brand="claim"></span><br><span data-brand="name"></span>
   </footer>
 </div>
 
+<script src="theme/theme.js"></script>
+<script src="js/brand.js"></script>
 <script>
 (function () {
   'use strict';
@@ -591,7 +575,8 @@
   ];
 
   // One fixed colour per pressure level, so 1008 looks the same on every map.
-  var LEVEL_COLORS = ['#3a3a3a', '#8a6fd1', '#4a2e83', '#28348f', '#1093c4', '#00954f', '#6b6b23', '#d2a716', '#ef8f2c', '#c65a2a', '#df2a1e', '#a51c12', '#6e140d'];
+  var IC = window.THEME.isobars, FONT = window.THEME.font;
+  var LEVEL_COLORS = IC.levels;
   function levelColor(X) {
     var k = Math.round((X - 984) / 4);
     return LEVEL_COLORS[Math.max(0, Math.min(LEVEL_COLORS.length - 1, k))];
@@ -1171,10 +1156,24 @@
   var drag = null, hover = null, flashMsg = null, flashTimer = null;
 
   function layout() {
-    var w = stage.clientWidth;
-    var s = w / (S.W - 1 + 2 * PAD);
+    var card = stage.parentNode, mapFoot = document.querySelector('.map-foot');
+    var border = card.offsetWidth - card.clientWidth;
+    var w = card.parentNode.clientWidth - border;
     var topRoom = 34; // space for the hint badge
-    var h = s * (S.H - 1 + 2 * PAD) + topRoom;
+    var cols = S.W - 1 + 2 * PAD, rows = S.H - 1 + 2 * PAD;
+    // Desktop: the whole map stays on screen, so it is no wider than the
+    // viewport height allows.
+    if (document.documentElement.getAttribute('data-view') === 'desktop') {
+      var maxH = window.innerHeight - 330;
+      w = Math.max(360, Math.min(w, (maxH - topRoom) * cols / rows));
+      card.style.width = (w + border) + 'px';
+      if (mapFoot) mapFoot.style.width = (w + border) + 'px';
+    } else {
+      card.style.width = '';
+      if (mapFoot) mapFoot.style.width = '';
+    }
+    var s = w / cols;
+    var h = s * rows + topRoom;
     stage.style.height = h + 'px';
     G.u = s; G.ox0 = PAD * s; G.oy0 = PAD * s + topRoom; G.w = w; G.h = h;
     G.dpr = Math.min(window.devicePixelRatio || 1, 3);
@@ -1212,7 +1211,7 @@
   }
 
   function pill(text, x, y, fs, fill, stroke, color, lw) {
-    ctx.font = '800 ' + fs + 'px Archivo, "Helvetica Neue", Arial, sans-serif';
+    ctx.font = '500 ' + fs + 'px ' + FONT;
     var tw = ctx.measureText(text).width, pw = tw + fs * 0.7, ph = fs * 1.45;
     roundRect(x - pw / 2, y - ph / 2, pw, ph, ph / 2);
     ctx.fillStyle = fill; ctx.fill();
@@ -1258,7 +1257,7 @@
   function drawEurope(s) {
     ctx.save();
     ctx.beginPath(); ctx.rect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s); ctx.clip();
-    ctx.fillStyle = '#dcebf2';
+    ctx.fillStyle = IC.sea;
     ctx.fillRect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s);
     ctx.beginPath();
     COAST.forEach(function (poly) {
@@ -1268,14 +1267,14 @@
       });
       ctx.closePath();
     });
-    ctx.fillStyle = '#f2e2c0'; ctx.fill();
-    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(17,17,17,.35)'; ctx.stroke();
+    ctx.fillStyle = IC.land; ctx.fill();
+    ctx.lineWidth = 1; ctx.strokeStyle = IC.coast; ctx.stroke();
     var u = G.u;
-    ctx.font = '600 ' + Math.max(7.5, u * 0.22) + 'px Archivo, sans-serif';
+    ctx.font = '500 ' + Math.max(7.5, u * 0.22) + 'px ' + FONT;
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     CITIES.forEach(function (c) {
       var q = geoToGrid(c[1], c[2]), x = px(q.x), y = py(q.y);
-      ctx.fillStyle = 'rgba(17,17,17,.45)';
+      ctx.fillStyle = IC.muted;
       ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
       // labels sit right of the dot, or left of it near the eastern rim
       ctx.textAlign = c[3] ? 'right' : 'left';
@@ -1284,12 +1283,12 @@
     // scale bar: 500 km, true at 50\u00b0N (the map is stretched towards the pole)
     var KM_PER_CELL = EU.dlon * 111.2 * Math.cos(50 * Math.PI / 180);
     var bx0 = px(0.25), bx1 = px(0.25 + 500 / KM_PER_CELL), by0 = py(S.H - 1 - 0.3);
-    ctx.strokeStyle = '#111111'; ctx.lineWidth = 2; ctx.lineCap = 'butt';
+    ctx.strokeStyle = IC.ink; ctx.lineWidth = 2; ctx.lineCap = 'butt';
     ctx.beginPath();
     ctx.moveTo(bx0, by0 - 4); ctx.lineTo(bx0, by0); ctx.lineTo(bx1, by0); ctx.lineTo(bx1, by0 - 4);
     ctx.stroke();
-    ctx.fillStyle = '#111111'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
-    ctx.font = '800 ' + Math.max(7.5, u * 0.22) + 'px Archivo, sans-serif';
+    ctx.fillStyle = IC.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    ctx.font = '500 ' + Math.max(7.5, u * 0.22) + 'px ' + FONT;
     ctx.fillText('500 km (50\u00b0 N)', bx0, by0 - 5);
     ctx.restore();
   }
@@ -1297,18 +1296,18 @@
   function draw() {
     var s = G.s, u = G.u, i, j;
     ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
-    ctx.fillStyle = '#f2e2c0';
+    ctx.fillStyle = IC.land;
     ctx.fillRect(0, 0, G.w, G.h);
 
     if (mode().europe) drawEurope(s);
 
     // grid
-    ctx.strokeStyle = mode().europe ? 'rgba(17,17,17,.07)' : 'rgba(17,17,17,.1)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = mode().europe ? IC.gridFaint : IC.grid; ctx.lineWidth = 1;
     ctx.beginPath();
     for (i = 0; i < S.W; i++) { ctx.moveTo(px(i), py(0)); ctx.lineTo(px(i), py(S.H - 1)); }
     for (j = 0; j < S.H; j++) { ctx.moveTo(px(0), py(j)); ctx.lineTo(px(S.W - 1), py(j)); }
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(17,17,17,.55)'; ctx.lineWidth = 2;
+    ctx.strokeStyle = IC.rim; ctx.lineWidth = 2;
     ctx.strokeRect(px(0), py(0), (S.W - 1) * s, (S.H - 1) * s);
 
     // reference overlay
@@ -1350,17 +1349,17 @@
       var x = px(n % S.W), y = py(Math.floor(n / S.W));
       var txt = String(Math.round(S.vals[n]));
       if (S.station[n]) {
-        var fill = '#ffffff';
-        if (hintLvl !== null) fill = S.vals[n] < hintLvl ? '#cfe6f6' : '#f7cfc0';
+        var fill = IC.paper;
+        if (hintLvl !== null) fill = S.vals[n] < hintLvl ? IC.below : IC.above;
         var wrong = S.result && S.result.wrong.has(n);
-        pill(txt, x, y, fs, fill, wrong ? '#df2a1e' : '#111111', '#111111', wrong ? 3 : 1.5);
+        pill(txt, x, y, fs, fill, wrong ? IC.wrong : IC.ink, IC.ink, wrong ? 3 : 1.5);
       } else if (S.showRef) {
-        ctx.font = 'italic 600 ' + (fs * 0.85) + 'px Archivo, sans-serif';
-        ctx.fillStyle = 'rgba(17,17,17,.55)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = 'italic 500 ' + (fs * 0.85) + 'px ' + FONT;
+        ctx.fillStyle = IC.hidden; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(txt, x, y);
       } else {
         ctx.beginPath(); ctx.arc(x, y, Math.max(1.6, u * 0.04), 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(17,17,17,.35)'; ctx.fill();
+        ctx.fillStyle = IC.dot; ctx.fill();
       }
     }
 
@@ -1369,20 +1368,20 @@
       S.lines.forEach(function (L) {
         if (pathLength(L.pts) < 1) return;
         var m = labelPoint(L.pts);
-        pill(String(L.lvl), px(m.x), py(m.y), fs * 0.8, '#f2e2c0', levelColor(L.lvl), levelColor(L.lvl), 1.5);
+        pill(String(L.lvl), px(m.x), py(m.y), fs * 0.8, IC.land, levelColor(L.lvl), levelColor(L.lvl), 1.5);
       });
     }
     // loose ends: an isobar never stops in the middle of the field
     S.open.forEach(function (o) {
       ctx.beginPath(); ctx.arc(px(o.x), py(o.y), lw * 1.35, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.fillStyle = IC.paper; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = levelColor(o.lvl); ctx.stroke();
     });
     // crossings
     S.crossings.forEach(function (c) {
       var r = lw * 1.4, x = px(c.x), y = py(c.y);
-      ctx.beginPath(); ctx.arc(x, y, r * 1.25, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
-      ctx.strokeStyle = '#df2a1e'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(x, y, r * 1.25, 0, Math.PI * 2); ctx.fillStyle = IC.paper; ctx.fill();
+      ctx.strokeStyle = IC.wrong; ctx.lineWidth = 2.5;
       ctx.beginPath(); ctx.moveTo(x - r * 0.7, y - r * 0.7); ctx.lineTo(x + r * 0.7, y + r * 0.7);
       ctx.moveTo(x + r * 0.7, y - r * 0.7); ctx.lineTo(x - r * 0.7, y + r * 0.7); ctx.stroke();
     });
