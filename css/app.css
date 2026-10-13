@@ -1,0 +1,77 @@
+/* Isobaren zeichnen – layout only (theme variables from theme/theme.css,
+   shared components from css/kit.css). */
+
+/* ---- the board: a square frame; the map keeps its proportions inside ---- */
+#stage-frame { overflow: hidden; }
+#board { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+/* status line and map note under the board */
+.status { margin: 8px 0 4px; }
+.status.warn { color: var(--warn); }
+.status.good::before { content: "★ "; }
+.map-note { font-size: 13px; line-height: 1.5; color: var(--ink-muted); margin: 0 0 12px; }
+.map-note b { font-weight: var(--fw-medium); color: var(--ink); }
+:root[data-view="desktop"] .lab-stage .status,
+:root[data-view="desktop"] .map-note { width: min(100%, calc(100svh - var(--head-h) - var(--fit-offset, 230px))); min-width: 360px; margin-inline: auto; }
+
+/* ---- modes, Wetterlagen, level chips ---- */
+.mode-row { margin-bottom: 10px; }
+.mode-row .btn { flex: 1 1 0; min-width: 0; text-align: center; }
+.preset-row { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.preset-name { flex: 1; min-width: 0; text-align: center; line-height: 1.25; }
+.preset-name b { display: block; font-size: 15px; font-weight: var(--fw-medium); }
+.preset-name span { display: block; font-size: 12px; font-weight: var(--fw-medium); letter-spacing: .04em; text-transform: var(--caps); color: var(--ink-muted); }
+.sq {
+  flex: none; width: var(--tap); height: var(--tap); padding: 0;
+  border: var(--line-width) solid var(--line); background: var(--paper); color: var(--ink);
+  font-weight: var(--fw-medium); font-size: 22px; line-height: 1; cursor: pointer;
+}
+.level-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 10px; }
+.level-label { font-size: 12px; font-weight: var(--fw-medium); letter-spacing: .06em; text-transform: var(--caps); margin-right: 4px; }
+.level-chip {
+  position: relative; min-height: var(--tap); padding: 6px 10px 6px 24px;
+  border: var(--line-width) solid var(--line); background: var(--paper); color: var(--ink);
+  font-weight: var(--fw-medium); font-size: 14px; font-variant-numeric: tabular-nums; line-height: 1; cursor: pointer;
+}
+.level-chip::before { content: ""; position: absolute; left: 8px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--c); }
+.level-chip[aria-pressed="true"] { background: var(--active); color: var(--active-ink); }
+.level-chip .st { margin-left: 5px; font-size: 12px; }
+
+/* ---- tools, buttons ---- */
+.tool-row { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; }
+.tools { flex: 1; min-width: 0; flex-wrap: nowrap; }
+.tools .btn { flex: 1 1 0; min-width: 0; padding: 6px 4px; font-size: 12.5px; text-align: center; }
+.tools .btn .sub, .btn-row .btn .sub { font-size: 11px; }
+.btn-row { margin: 0 0 12px; }
+.btn-row .btn { text-align: center; padding-inline: 6px; }
+#btn-check { flex: 1.4; }
+.readout-grid b.bad { color: var(--warn); }
+
+/* ---- result ---- */
+.result { border: var(--line-width) solid var(--line); margin: 0 0 14px; }
+.result-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: var(--result-head); border-bottom: var(--line-width) solid var(--line); }
+.result-score { font-size: 40px; font-weight: var(--fw-light); line-height: 1; font-variant-numeric: tabular-nums; }
+.result-score small { font-size: 14px; font-weight: var(--fw-medium); color: var(--ink-muted); }
+.result-stars { font-size: 26px; letter-spacing: 2px; }
+.result-verdict { margin-top: 4px; font-size: 13px; font-weight: var(--fw-medium); text-transform: var(--caps); letter-spacing: .04em; }
+.result-body { padding: 12px 14px 14px; }
+.crit { margin: 0 0 10px; }
+.crit-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: var(--fw-medium); text-transform: var(--caps); letter-spacing: .05em; }
+.crit-bar { height: 10px; border: var(--line-width) solid var(--line); margin-top: 4px; background: var(--paper); }
+.crit-bar i { display: block; height: 100%; background: var(--ink); }
+.crit-note { font-size: 13px; color: var(--ink-muted); margin-top: 4px; line-height: 1.4; }
+.penalties { font-size: 13px; font-weight: var(--fw-medium); margin-top: 8px; color: var(--warn); }
+.penalties:empty { display: none; }
+.level-report { list-style: none; margin: 12px 0 0; padding: 10px 0 0; border-top: var(--line-width) solid var(--line); }
+.level-report li { display: flex; gap: 8px; align-items: baseline; font-size: 14px; line-height: 1.45; margin-bottom: 5px; }
+.level-report .lv { flex: none; font-weight: var(--fw-medium); font-variant-numeric: tabular-nums; min-width: 76px; }
+.level-report .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.level-report .ok { color: var(--good); font-weight: var(--fw-medium); }
+.level-report .bad { color: var(--warn); font-weight: var(--fw-medium); }
+.result-actions { margin: 12px 0 0; }
+
+/* the fullscreen button sits top right, in the band kept free above the map,
+   so it never covers a station in the bottom corner */
+#stage-frame > .fs-btn { top: 8px; bottom: auto; }
+/* the first-hint badge stays clear of the fullscreen button */
+#stage-frame > .hint-badge { width: max-content; max-width: calc(100% - 120px); }

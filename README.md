@@ -34,12 +34,15 @@ contour interpolation, not painting by numbers.
   fingers (more than about 25 % change in their distance) switches the
   gesture to zooming; both fingers' moves are applied together once per
   frame, so a sideways move no longer jitters the zoom.
-- **Zoom** for small-scale lines: pinch with two fingers, Ctrl/Cmd + mouse
-  wheel (or a trackpad pinch), or the −/+/⤢ buttons under the board; on
-  desktop the plain wheel scrolls the page and the right (or middle) mouse
-  button pans. Zoom scales positions only — labels, line
-  widths and markers keep their size, so zooming in makes room for detail —
-  and the stroke smoothing, snapping and tap distances shrink with the zoom,
+- **Zoom** for small-scale lines: pinch with two fingers, or Ctrl/Cmd +
+  mouse wheel (or a trackpad pinch); there are no zoom buttons. When zoomed,
+  two fingers (touch) or the right/middle mouse button (desktop) pan the map
+  – a one-finger or left-button drag always draws, so it cannot pan. On
+  desktop the plain wheel scrolls the page. Zoom scales positions only —
+  labels, line widths and markers keep their size, so zooming in makes room
+  for detail (the italic values of hidden grid points in „Wahres Feld“
+  appear only where they fit, so on a phone you zoom in to read them) — and
+  the stroke smoothing, snapping and tap distances shrink with the zoom,
   so small wiggles drawn zoomed in survive. A second finger landing
   mid-stroke cancels that stroke instead of leaving a stray line.
 - Tap a line to delete it, or drag across lines with the **Radierer**;
@@ -83,8 +86,8 @@ There is no single correct drawing, so the game scores structure, not pixels.
   near 0 %; the true-field isobars score 90–100 %.
 - **Penalties.** Isobars never cross: every crossing (between two lines, or
   a line with itself) costs 15 points and marks the result as invalid. An
-  isobar never ends in the middle of the field: every loose end costs 10. The **Tipp**, which colours stations blue/red relative
-  to the selected level, costs 10 outside the tutorial.
+  isobar never ends in the middle of the field: every loose end costs 10. The **Tipp**, which colours stations red (below) or blue
+  (above) relative to the selected level, costs 10 outside the tutorial.
 
 The top verdict and three stars need a structurally correct map: every
 level drawn, every station on the right side, no loose ends, no crossings.
@@ -93,7 +96,8 @@ After checking, **Wahres Feld** shows the model solution: the isobars of
 the complete hidden field, traced by marching squares on a grid five times
 finer than the board from the continuous field the map was built from, so
 they come out as smooth curves rather than one straight piece per cell. It
-also shows the hidden grid values and marks highs and lows with H and T.
+also shows the hidden grid values and marks highs with a blue H and lows
+with a red T (the SCAPE° pressure colours, `THEME.data.high/low`).
 It does not count towards the score; it shows what was really going on
 between the stations — the same gap every sparse observing network has.
 
@@ -101,7 +105,7 @@ between the stations — the same gap every sparse observing network has.
 
 | Mode | What it is |
 |---|---|
-| Tutorial | 5×5 grid, 6 stations, one isobar, stations always coloured, step-by-step prompts |
+| Tutorial | 5×5 grid, 6 stations, one isobar, stations always coloured (red below, blue above), step-by-step prompts in the status line under the board |
 | Wetterlagen | All of Europe with coastlines, 13×11 grid, 40–48 stations, eight Großwetterlagen |
 
 ### Wetterlagen: the whole of Europe
@@ -154,23 +158,76 @@ subset, and the generator retries until the number of levels fits and
 every level has at least two stations on each side. Best scores per mode
 are kept in `localStorage`.
 
-## Tech
+## Tasks and Merke box
 
-- One self-contained `index.html`: canvas + plain JavaScript, no build step,
-  no server, no external dependencies (no web fonts from the internet).
-- State is a list of polylines (points plus level plus closed flag), not a
-  pixel mask; the raster only exists for the moment of scoring. Undo stores
-  snapshots of that list.
-- Design: SCAPE° corporate design, kept apart from the app in `theme/`
-  (`theme.css`: font, palette, roles, wordmark; `theme.js`: brand texts and
-  every map colour, including the fixed colour per isobar level). To ship
-  the game in another design, edit `theme/` only — see `theme/README.md`.
-- Layout: mobile-first. The desktop view puts the map on the left, sized so
-  the whole map stays on screen, with intro, mode, level chips, tools and
-  the check button in a column to its right.
-- `window.__isodraw` exposes the state, the evaluator and `solve()` (fills
-  the board with the true-field isobars) for automated checks.
+Three optional tasks unlock the "Merke" box (key insight: isobars join equal
+pressure, never cross, never end in the field; rings round low values are
+lows, round high values highs; tight lines mean strong wind):
 
-Deployed like the other SCAPE° exhibits: GitHub Pages serving the `main`
-branch root. Open `index.html` directly, or serve the folder with any static
-file server.
+| Task | Done when |
+|---|---|
+| Solve the tutorial | a tutorial check is structurally correct (every station on the right side, no loose end, no crossing) |
+| Two stars on a Wetterlage | a Wetterlagen check scores at least 70 points |
+| Find T and H | „Wahres Feld“ is switched on after checking a Wetterlagen map |
+
+The score, stars and the best score per mode (in `localStorage`) stay – this
+is the one game app among the SCAPE° exhibits.
+
+## Run
+
+Open `index.html` (double-click works, no build, no server, works offline),
+or serve the folder with any static file server / GitHub Pages.
+
+URL switches for staff:
+
+- `?kiosk` – exhibit mode: after 3 minutes without touch the page starts
+  again and the best scores of earlier visitors are cleared.
+
+There is no staff panel. `window.__isodraw` exposes the state, the evaluator
+and `solve()` (fills the board with the true-field isobars) for automated
+checks.
+
+## Files
+
+```
+index.html          structure only (data-t placeholders for every text)
+css/kit.css         shared SCAPE° components (same in every app)
+css/app.css         layout of this app
+js/view.js          phone/desktop layout switch (loaded in <head>)
+js/texts.js         fills the texts from content/
+js/brand.js         fills logo and footer line from the theme
+js/kit.js           fullscreen button, hint badge, info notes, tasks/Merke, kiosk mode
+js/europe.js        coastline, cities and the eight Großwetterlagen (numbers only)
+js/model.js         map generation, lines, snapping, scoring, reference field
+js/render.js        drawing the board on the canvas
+js/app.js           layout, zoom, drawing input, modes, tools, result, tasks
+content/texts.de.js every visible text, incl. the Wetterlagen descriptions and city names
+theme/              the design: font, palette, logo, colours (see theme/README.md)
+```
+
+State is a list of polylines (points plus level plus closed flag), not a
+pixel mask; the raster only exists for the moment of scoring. Undo stores
+snapshots of that list.
+
+## Layout
+
+Phone: mode, Wetterlage, level chips, the square board with a status line
+and the map note below, tools, readout, Prüfen/Zurück/Neue Karte, result,
+hint, tasks, Merke. Desktop (automatic from 1000 px, or via the
+"Desktop-/Handy-Ansicht" toggle, remembered for this app only): the board on
+the left, sized to the screen; everything else on the right. Longer
+explanations sit in collapsible topics below; the footer names the sources
+(Natural Earth coastline, Großwetterlagen after Hess/Brezowsky).
+
+The board frame is square; the map keeps its own proportions inside it and
+leaves a band at the top for the first-hint badge and the fullscreen button
+(which therefore sits top right here). Canvas text is never smaller than
+12 px on screen.
+
+## Adapting
+
+Design: `theme/` only (map colours in `THEME.isobars`, the level colours run
+from red for low to blue for high pressure, matching T red / H blue).
+Texts: `content/texts.de.js` only (lines marked `LOCAL` refer to the German
+weather service DWD as the national reference). Founders Grotesk is used
+when installed, otherwise the system fallback.

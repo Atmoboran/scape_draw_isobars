@@ -9,8 +9,8 @@ window.THEME = {
       '<span class="logo-word">SCAPE°</span>' +
       '<span class="logo-sub" aria-hidden="true"><span>Wetter</span><span>Klima</span><span>Mensch</span></span>',
     logoLabel: 'SCAPE° – Wetter Klima Mensch',
-    claim: 'Wetter, Klima, Wandel. Wir erklären es.',
-    contactHtml: 'SCAPE°<br>Frankfurter Straße 39<br>63065 Offenbach am Main<br>Instagram: @scape_offenbach<br>scape@offenbach.de',
+    // The one line in every footer.
+    line: 'SCAPE° – Wetter. Klima. Mensch.',
     titleSuffix: ' – SCAPE°',
     themeColor: '#F2E4BA',
     // Short mark S° for the browser tab.
@@ -32,14 +32,31 @@ window.THEME = {
     greenStrong: '#00983A', green: '#62BA91', greenPale: '#B0D8C0', mint: '#CFE6CE', paleGreen: '#D0E8DC',
     cyan: '#0097BE', cyan2: '#44ABCC', cyan3: '#80C0DA', petrol: '#1F6C8E', teal: '#007B73', grey: '#AEC4C2',
     navy: '#28348B', blue: '#0253A0', blue2: '#3274BA', bluePale: '#98B8DD', ice: '#D4EDF8'
+  },
+
+  // Meaningful data colours, the same in every app (style guide 4.3).
+  data: {
+    cold: '#3274BA', neutral: '#D9D6CF', warm: '#E41513',   // temperature scale
+    low: '#E41513', high: '#3274BA',                        // T (Tief) red, H (Hoch) blue
+    pairA: '#E41513', pairB: '#28348B'                      // two things compared: red vs blue
   }
 };
 
-// ---- Isobaren zeichnen: colours on the map canvas ----
+// Colour on the CD temperature scale: t = 0 (cold) … 0.5 (neutral) … 1 (warm).
+THEME.tempColor = function (t) {
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const [a, b] = t < 0.5 ? [hex(THEME.data.cold), hex(THEME.data.neutral)] : [hex(THEME.data.neutral), hex(THEME.data.warm)];
+  const f = Math.max(0, Math.min(1, t < 0.5 ? t * 2 : (t - 0.5) * 2));
+  return 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(',') + ')';
+};
+
+// Isobaren zeichnen: colours on the map canvas. The pressure letters use
+// THEME.data (T red, H blue), so the isobar levels run the same way:
+// low pressure warm (red), high pressure cool (blue).
 THEME.isobars = {
   // One fixed colour per isobar level, low to high pressure (4-hPa steps
-  // from 984 hPa): cool for low, warm for high. 13 entries.
-  levels: ['#442683', '#523E91', '#28348B', '#0253A0', '#3274BA', '#0097BE', '#007B73', '#00983A', '#726B1E', '#C89F09', '#EE7518', '#D55117', '#E41513'],
+  // from 984 hPa; the 5-hPa Europe levels pick the nearest). 13 entries.
+  levels: ['#E41513', '#D55117', '#EE7518', '#E09F00', '#726B1E', '#00983A', '#007B73', '#0097BE', '#3274BA', '#0253A0', '#28348B', '#523E91', '#442683'],
   ink: '#000000',
   paper: '#FFFFFF',
   land: '#F2E4BA',             // land / practice field
@@ -48,10 +65,10 @@ THEME.isobars = {
   grid: 'rgba(0,0,0,.1)',      // lattice lines
   gridFaint: 'rgba(0,0,0,.07)',
   rim: 'rgba(0,0,0,.55)',
-  muted: 'rgba(0,0,0,.45)',    // labels on the map (scale, place names)
-  hidden: 'rgba(0,0,0,.55)',   // values of hidden grid points
+  muted: 'rgba(0,0,0,.55)',    // labels on the map (scale, place names)
+  hidden: 'rgba(0,0,0,.6)',    // values of hidden grid points
   dot: 'rgba(0,0,0,.35)',      // grid points without a station
-  below: '#D4EDF8',            // tutorial: station below the isobar
-  above: '#F8E1E6',            // tutorial: station above the isobar
+  below: '#EF887F',            // tip: station below the selected isobar (lower pressure, red side)
+  above: '#98B8DD',            // tip: station above the selected isobar (higher pressure, blue side)
   wrong: '#E41513'             // crossings, wrongly separated stations
 };
